@@ -11,7 +11,7 @@ echo ANDROID_HOME: %ANDROID_HOME%
 echo ========================================================
 
 cd /d "%~dp0android"
-call gradlew.bat assembleDebug
+call gradlew.bat clean assembleDebug
 
 if %ERRORLEVEL% EQU 0 (
     copy /y "app\build\outputs\apk\debug\app-debug.apk" "..\deli-printer-debug.apk" >nul

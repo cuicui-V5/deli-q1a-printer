@@ -92,12 +92,7 @@ class LabelCanvasView @JvmOverloads constructor(
             val tf = Typeface.createFromAsset(context.assets, "fonts/AlibabaPuHuiTi-Heavy.ttf")
             textPaint.typeface = tf
         } catch (_: Exception) {
-            try {
-                val tf = Typeface.createFromAsset(context.assets, "fonts/NotoSansSC.ttf")
-                textPaint.typeface = tf
-            } catch (_: Exception) {
-                textPaint.typeface = Typeface.DEFAULT_BOLD
-            }
+            textPaint.typeface = Typeface.DEFAULT_BOLD
         }
         saveStateToHistory()
     }
