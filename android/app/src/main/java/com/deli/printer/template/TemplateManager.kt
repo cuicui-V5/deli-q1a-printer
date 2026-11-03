@@ -19,28 +19,10 @@ object TemplateManager {
 
     private const val FILE_NAME = "user_templates.json"
 
-    fun getAllTemplates(context: Context, canvasW: Float, canvasH: Float): List<TemplateItem> {
+    fun getAllTemplates(context: Context): List<TemplateItem> {
         val list = mutableListOf<TemplateItem>()
 
-        // 1. Built-in Templates
-        list.add(
-            TemplateItem(
-                id = "builtin_screw",
-                name = "银色内六角螺丝 (M3x6)",
-                isCustom = false,
-                elements = LabelTemplates.applyScrewTemplate(canvasW, canvasH)
-            )
-        )
-        list.add(
-            TemplateItem(
-                id = "builtin_resistor",
-                name = "100Ω电阻 (1206)",
-                isCustom = false,
-                elements = LabelTemplates.applyResistorTemplate(canvasW, canvasH)
-            )
-        )
-
-        // 2. User Saved Templates
+        // User Saved Templates (Built-in templates removed per user request)
         val file = File(context.filesDir, FILE_NAME)
         if (file.exists()) {
             try {

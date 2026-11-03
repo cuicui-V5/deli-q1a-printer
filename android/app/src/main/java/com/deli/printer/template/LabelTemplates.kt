@@ -16,7 +16,7 @@ object LabelTemplates {
                 y = (canvasH - textSize * 1.3f) / 2f,
                 text = "示例文本",
                 textSize = textSize,
-                isBold = true,
+                isBold = false,
                 isCentered = true
             )
         )

@@ -26,6 +26,7 @@ class TemplateLibraryDialog : BaseBottomSheetDialogFragment() {
     var onTemplateSelected: ((List<CanvasElement>) -> Unit)? = null
 
     private lateinit var rvTemplates: RecyclerView
+    private lateinit var tvEmpty: TextView
     private lateinit var adapter: TemplateAdapter
 
     override fun onCreateView(
@@ -40,6 +41,7 @@ class TemplateLibraryDialog : BaseBottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         rvTemplates = view.findViewById(R.id.rvTemplates)
+        tvEmpty = view.findViewById(R.id.tvEmptyTemplates)
         rvTemplates.layoutManager = LinearLayoutManager(requireContext())
 
         val btnSaveCurrent: View = view.findViewById(R.id.btnSaveCurrentAsTemplate)
@@ -51,7 +53,14 @@ class TemplateLibraryDialog : BaseBottomSheetDialogFragment() {
     }
 
     private fun loadTemplates() {
-        val list = TemplateManager.getAllTemplates(requireContext(), canvasWidth, canvasHeight)
+        val list = TemplateManager.getAllTemplates(requireContext())
+        if (list.isEmpty()) {
+            tvEmpty.visibility = View.VISIBLE
+            rvTemplates.visibility = View.GONE
+        } else {
+            tvEmpty.visibility = View.GONE
+            rvTemplates.visibility = View.VISIBLE
+        }
         adapter = TemplateAdapter(list, { selected ->
             onTemplateSelected?.invoke(selected.elements)
             dismiss()

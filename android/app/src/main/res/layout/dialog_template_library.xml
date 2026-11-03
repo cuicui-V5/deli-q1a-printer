@@ -55,6 +55,18 @@
             android:textStyle="bold" />
     </LinearLayout>
 
+    <!-- Empty State Hint -->
+    <TextView
+        android:id="@+id/tvEmptyTemplates"
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:gravity="center"
+        android:lineSpacingExtra="6dp"
+        android:text="暂无模版\n点击右上角【＋ 存当前为模版】\n即可将当前画布保存为专属模版！"
+        android:textColor="@color/text_muted"
+        android:textSize="14sp"
+        android:visibility="gone" />
+
     <!-- Templates List -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvTemplates"

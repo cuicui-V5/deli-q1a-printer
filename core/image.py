@@ -9,9 +9,11 @@ from PIL import Image, ImageDraw, ImageFont, ImageOps
 from .protocol import WIDTH_PX, HEIGHT_PX
 
 def find_system_font(size: int):
-    """Finds a usable Chinese/English font, prioritizing Source Han Sans / Noto Sans SC (思源黑体)."""
+    """Finds a usable Chinese/English font, prioritizing Alibaba PuHuiTi 3.0 Heavy / Source Han Sans."""
     candidates = [
-        # Priority 1: Local bundled Source Han Sans / Noto Sans SC
+        # Priority 1: Local bundled Alibaba PuHuiTi 3.0 Heavy (阿里巴巴普惠体 3.0 特粗版)
+        os.path.join(os.path.dirname(os.path.dirname(__file__)), "web", "static", "fonts", "AlibabaPuHuiTi-Heavy.ttf"),
+        # Priority 2: Local bundled Source Han Sans / Noto Sans SC
         os.path.join(os.path.dirname(os.path.dirname(__file__)), "web", "static", "fonts", "NotoSansSC.ttf"),
         # Priority 2: Windows official Noto Sans SC
         r"C:\Windows\Fonts\NotoSansSC-VF.ttf",

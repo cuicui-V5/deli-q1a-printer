@@ -13,7 +13,7 @@ import com.deli.printer.protocol.DeliProtocol
 
 class SettingsDialog : BaseBottomSheetDialogFragment() {
 
-    var currentDensity: Int = 2 // Default: 2 (Dark / 高浓度)
+    var currentDensity: Int = 1 // Default: 1 (Normal / 标准推荐)
     var currentSpec: PaperSpec = PaperSpec.SPEC_15_30
     var onSettingsSaved: ((density: Int, spec: PaperSpec) -> Unit)? = null
     var onScanRequested: (() -> Unit)? = null

@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnInspectorDelete: ImageButton
 
     private var isUpdatingInspector: Boolean = false
-    private var currentDensity: Int = 2 // Default: 2 (高浓度 / 深度)
+    private var currentDensity: Int = 1 // Default: 1 (标准推荐浓度)
     private var currentSpec: PaperSpec = PaperSpec.SPEC_15_30
     private var isLandscape: Boolean = true
 
@@ -64,7 +64,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         prefs = getSharedPreferences("deli_printer_prefs", Context.MODE_PRIVATE)
-        currentDensity = prefs.getInt("key_density", 2) // Default to High (2)
+        currentDensity = prefs.getInt("key_density", 1) // Default to Normal (1)
         val savedSpecName = prefs.getString("key_spec", PaperSpec.SPEC_15_30.name)
         currentSpec = PaperSpec.ALL_SPECS.find { it.name == savedSpecName } ?: PaperSpec.SPEC_15_30
 
@@ -395,7 +395,7 @@ class MainActivity : AppCompatActivity() {
                 y = (h - 22f) / 2f,
                 text = "新建文本",
                 textSize = 22f,
-                isBold = true,
+                isBold = false,
                 isCentered = true
             )
             canvasView.addElement(newElem)

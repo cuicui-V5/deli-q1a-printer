@@ -44,7 +44,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="默认热敏打印浓度 (默认设为高)"
+                android:text="默认热敏打印浓度 (推荐标准)"
                 android:textColor="@color/text_primary"
                 android:textSize="14sp"
                 android:textStyle="bold" />
@@ -54,7 +54,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:checkedButton="@+id/rbSettingsDensityDark"
+                android:checkedButton="@+id/rbSettingsDensityNormal"
                 android:orientation="horizontal">
 
                 <RadioButton
@@ -69,17 +69,17 @@
                     android:id="@+id/rbSettingsDensityNormal"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_weight="1.2"
                     android:textSize="13sp"
-                    android:text="标准" />
+                    android:text="标准 (推荐)" />
 
                 <RadioButton
                     android:id="@+id/rbSettingsDensityDark"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1.3"
+                    android:layout_weight="1"
                     android:textSize="13sp"
-                    android:text="深度 (高浓度)" />
+                    android:text="深度" />
             </RadioGroup>
 
             <View
