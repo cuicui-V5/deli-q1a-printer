@@ -208,7 +208,7 @@ async def print_job(mac, img, density=1, copies=1):
             await write_chunks(client, full_payload, chunk_size=200, delay=0.015)
 
             # Physical burn time delay (allowing dots to be heated without feed interruption)
-            burn_delay = max(1.5, (h_px / 120.0))
+            burn_delay = max(2.0, (h_px / 100.0))
             await asyncio.sleep(burn_delay)
 
             # 5. Position to next gap

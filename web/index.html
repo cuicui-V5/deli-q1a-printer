@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>得力 Q1A 标签工坊 (Deli Label Studio)</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <!-- Offline JS Libraries -->
+  <script src="/static/vendor/fabric.min.js"></script>
+  <script src="/static/vendor/jsbarcode.all.min.js"></script>
+  <script src="/static/vendor/qrcode.min.js"></script>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top Navigation Header -->
+    <header class="app-header">
+      <div class="header-left">
+        <div class="logo-box">
+          <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="16" rx="3"></rect>
+            <path d="M7 8h10"></path>
+            <path d="M7 12h6"></path>
+            <path d="M7 16h8"></path>
+          </svg>
+          <div class="logo-text">
+            <span class="title">得力 Q1A 标签工坊</span>
+            <span class="subtitle">免芯片自由打印系统</span>
+          </div>
+        </div>
+
+        <div class="spec-pill">
+          <span class="dot"></span>
+          <span id="labelSpecDisplay">15 × 30 mm (间隙纸)</span>
+          <button class="icon-btn-sm" id="btnRotateCanvas" title="旋转方向 (横向/纵向)">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"></path>
+              <path d="M21 3v5h-5"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="header-center">
+        <!-- History & View controls -->
+        <div class="btn-group">
+          <button class="tool-btn" id="btnUndo" title="撤销 (Ctrl+Z)" disabled>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v6h6"></path><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path></svg>
+          </button>
+          <button class="tool-btn" id="btnRedo" title="重做 (Ctrl+Y)" disabled>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 7v6h-6"></path><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"></path></svg>
+          </button>
+          <div class="divider-v"></div>
+          <button class="tool-btn" id="btnClear" title="清空画板">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          </button>
+        </div>
+
+        <div class="btn-group zoom-group">
+          <button class="tool-btn" id="btnZoomOut" title="缩小">-</button>
+          <span class="zoom-text" id="zoomLevelText">300%</span>
+          <button class="tool-btn" id="btnZoomIn" title="放大">+</button>
+          <button class="tool-btn" id="btnZoomFit" title="自适应大小">适配</button>
+        </div>
+
+        <div class="btn-group">
+          <button class="tool-btn mode-toggle-btn" id="btnPreviewToggle" title="热敏打印点阵模拟">
+            <span class="mode-icon">👁️</span>
+            <span>热敏点阵预览</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <button class="secondary-btn" id="btnExportJson" title="保存设计工程">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+          保存工程
+        </button>
+        <button class="secondary-btn" id="btnImportJson" title="加载已有工程">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          导入工程
+        </button>
+        <input type="file" id="jsonFileInput" accept=".json" style="display:none;">
+
+        <button class="secondary-btn" id="btnExportPng" title="导出高清PNG">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+          导出图片
+        </button>
+
+        <div class="device-pill ready" id="deviceStatusPill" title="蓝牙打印机已就绪">
+          <span class="status-indicator"></span>
+          <span class="device-name">Q1A_SS_A21E</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Workspace Layout -->
+    <div class="app-body">
+      <!-- Left Panel: Toolbox -->
+      <aside class="sidebar-left">
+        <!-- Toolbox Tabs -->
+        <nav class="toolbox-tabs">
+          <button class="tab-item active" data-tab="tab-text" title="文字">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"></polyline><line x1="9" y1="20" x2="15" y2="20"></line><line x1="12" y1="4" x2="12" y2="20"></line></svg>
+            <span>文字</span>
+          </button>
+          <button class="tab-item" data-tab="tab-codes" title="条形码与二维码">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            <span>条码/QR</span>
+          </button>
+          <button class="tab-item" data-tab="tab-shapes" title="几何图形与线条">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="12" cy="12" r="4"></circle></svg>
+            <span>图形</span>
+          </button>
+          <button class="tab-item" data-tab="tab-icons" title="图标与徽标">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+            <span>贴纸</span>
+          </button>
+          <button class="tab-item" data-tab="tab-images" title="本地图片">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+            <span>图片</span>
+          </button>
+          <button class="tab-item" data-tab="tab-templates" title="模版">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+            <span>模版</span>
+          </button>
+        </nav>
+
+        <!-- Toolbox Panels -->
+        <div class="toolbox-content">
+          <!-- Text Panel -->
+          <div class="tab-panel active" id="tab-text">
+            <h3 class="panel-title">添加文字</h3>
+            <div class="tool-card-grid">
+              <button class="add-preset-btn" id="btnAddHeading">
+                <span class="preview-text bold" style="font-size: 16px;">大标题</span>
+                <span class="desc">适合品名、主标题</span>
+              </button>
+              <button class="add-preset-btn" id="btnAddSubtitle">
+                <span class="preview-text" style="font-size: 13px;">副标题</span>
+                <span class="desc">规格、型号、批次</span>
+              </button>
+              <button class="add-preset-btn" id="btnAddBody">
+                <span class="preview-text" style="font-size: 11px;">正文小字</span>
+                <span class="desc">日期、备注、说明</span>
+              </button>
+              <button class="add-preset-btn" id="btnAddMultiLine">
+                <span class="preview-text" style="font-size: 12px; line-height: 1.2;">项目一<br>项目二</span>
+                <span class="desc">多行列表格式</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Barcode & QR Code Panel -->
+          <div class="tab-panel" id="tab-codes">
+            <h3 class="panel-title">一维条码 & 二维码</h3>
+            
+            <div class="form-group">
+              <label class="form-label">二维码 (QR Code)</label>
+              <div class="input-with-btn">
+                <input type="text" id="qrInputText" class="form-input" placeholder="输入网址、文本、Wi-Fi..." value="https://deli.com">
+                <button class="primary-btn-sm" id="btnAddQrCode">生成</button>
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-top: 16px;">
+              <label class="form-label">一维条形码 (CODE128)</label>
+              <div class="input-with-btn">
+                <input type="text" id="barcodeInputText" class="form-input" placeholder="输入数字或字母..." value="DELI-2026">
+                <button class="primary-btn-sm" id="btnAddBarcode">生成</button>
+              </div>
+              <label class="checkbox-label" style="margin-top: 8px;">
+                <input type="checkbox" id="barcodeShowText" checked>
+                <span>显示条码下方文本</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Shapes Panel -->
+          <div class="tab-panel" id="tab-shapes">
+            <h3 class="panel-title">几何图形与线条</h3>
+            <div class="shape-button-grid">
+              <button class="shape-btn" id="btnAddRect">
+                <div class="shape-icon rect-icon"></div>
+                <span>矩形框</span>
+              </button>
+              <button class="shape-btn" id="btnAddRoundRect">
+                <div class="shape-icon round-rect-icon"></div>
+                <span>圆角矩形</span>
+              </button>
+              <button class="shape-btn" id="btnAddCircle">
+                <div class="shape-icon circle-icon"></div>
+                <span>圆形</span>
+              </button>
+              <button class="shape-btn" id="btnAddLineH">
+                <div class="shape-icon line-h-icon"></div>
+                <span>水平线</span>
+              </button>
+              <button class="shape-btn" id="btnAddDashedLine">
+                <div class="shape-icon dashed-line-icon"></div>
+                <span>虚线</span>
+              </button>
+              <button class="shape-btn" id="btnAddOuterBorder">
+                <div class="shape-icon outer-border-icon"></div>
+                <span>外边框</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Icons Panel -->
+          <div class="tab-panel" id="tab-icons">
+            <h3 class="panel-title">常用标签图标</h3>
+            <div class="icon-selector-grid">
+              <button class="icon-cell" data-icon="package" title="包裹">📦</button>
+              <button class="icon-cell" data-icon="fragile" title="易碎品">🍷</button>
+              <button class="icon-cell" data-icon="this_side_up" title="向上">⬆️</button>
+              <button class="icon-cell" data-icon="umbrella" title="防潮防雨">☂️</button>
+              <button class="icon-cell" data-icon="warning" title="注意警示">⚠️</button>
+              <button class="icon-cell" data-icon="recycle" title="环保回收">♻️</button>
+              <button class="icon-cell" data-icon="star" title="星标">⭐</button>
+              <button class="icon-cell" data-icon="heart" title="心形">❤️</button>
+              <button class="icon-cell" data-icon="check" title="对勾">✔️</button>
+              <button class="icon-cell" data-icon="clock" title="时间">🕒</button>
+              <button class="icon-cell" data-icon="calendar" title="日历">📅</button>
+              <button class="icon-cell" data-icon="price" title="价格标签">🏷️</button>
+              <button class="icon-cell" data-icon="usb" title="数据接口">🔌</button>
+              <button class="icon-cell" data-icon="food" title="食品保鲜">🍎</button>
+              <button class="icon-cell" data-icon="scissors" title="剪切线">✂️</button>
+              <button class="icon-cell" data-icon="fire" title="严禁火种">🔥</button>
+            </div>
+          </div>
+
+          <!-- Images Panel -->
+          <div class="tab-panel" id="tab-images">
+            <h3 class="panel-title">上传图片</h3>
+            <div class="upload-dropzone" id="dropzone">
+              <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+              <p>拖拽图片至此处，或 <span class="highlight">点击上传</span></p>
+              <span class="subtext">支持 PNG, JPG, BMP 等格式</span>
+              <input type="file" id="imageFileInput" accept="image/*" style="display:none;">
+            </div>
+
+            <div class="form-group" style="margin-top: 16px;">
+              <label class="checkbox-label">
+                <input type="checkbox" id="ditherImageToggle" checked>
+                <span>启用抗锯齿抖动 (Floyd-Steinberg)</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Templates Panel -->
+          <div class="tab-panel" id="tab-templates">
+            <h3 class="panel-title">经典精选模版</h3>
+            <div class="template-list">
+              <div class="template-card" data-template="storage">
+                <div class="template-preview-box">
+                  <div class="tpl-title">居家收纳整理</div>
+                  <div class="tpl-sub">物品: 数据线 / 充电头</div>
+                  <div class="tpl-footer">2026-11-03 间隙纸</div>
+                </div>
+                <div class="template-meta">
+                  <span class="name">居家收纳标签</span>
+                  <button class="apply-tpl-btn">应用</button>
+                </div>
+              </div>
+
+              <div class="template-card" data-template="cable">
+                <div class="template-preview-box">
+                  <div class="tpl-title">🔌 Type-C 快充线</div>
+                  <div class="tpl-sub">功率: 100W PD 快充</div>
+                  <div class="tpl-footer">桌面设备专线</div>
+                </div>
+                <div class="template-meta">
+                  <span class="name">线缆设备标</span>
+                  <button class="apply-tpl-btn">应用</button>
+                </div>
+              </div>
+
+              <div class="template-card" data-template="food">
+                <div class="template-preview-box">
+                  <div class="tpl-title">🍎 食品保鲜标</div>
+                  <div class="tpl-sub">开封: 2026.11.03</div>
+                  <div class="tpl-footer">赏味期: 7天内冷藏</div>
+                </div>
+                <div class="template-meta">
+                  <span class="name">食品保鲜标签</span>
+                  <button class="apply-tpl-btn">应用</button>
+                </div>
+              </div>
+
+              <div class="template-card" data-template="price">
+                <div class="template-preview-box">
+                  <div class="tpl-title">特惠尝鲜价</div>
+                  <div class="tpl-sub">现价: ¥ 19.90</div>
+                  <div class="tpl-footer">|||||||||||||||||</div>
+                </div>
+                <div class="template-meta">
+                  <span class="name">商品特惠标</span>
+                  <button class="apply-tpl-btn">应用</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Center Workspace (Canvas Area) -->
+      <main class="workbench-center">
+        <!-- Workbench canvas stage -->
+        <div class="canvas-stage" id="canvasStage">
+          <!-- Physical label paper simulation wrapper -->
+          <div class="label-paper-shadow" id="paperContainer">
+            <div class="tear-notch left-notch"></div>
+            <div class="tear-notch right-notch"></div>
+            
+            <div class="canvas-wrapper">
+              <canvas id="labelCanvas"></canvas>
+            </div>
+            
+            <div class="paper-ruler-tag" id="rulerTag">15 × 30 mm</div>
+          </div>
+        </div>
+
+        <!-- Canvas bottom hint bar -->
+        <div class="workbench-footer">
+          <div class="hint-item">
+            <span class="key-tag">Delete</span> 删除对象
+          </div>
+          <div class="hint-item">
+            <span class="key-tag">↑ ↓ ← →</span> 微调位置 (按住 Shift 加速)
+          </div>
+          <div class="hint-item">
+            <span class="key-tag">Ctrl+Z / Y</span> 撤销 / 重做
+          </div>
+        </div>
+      </main>
+
+      <!-- Right Panel: Inspector & Print Control -->
+      <aside class="sidebar-right">
+        <!-- Object Inspector -->
+        <div class="inspector-card" id="inspectorCard">
+          <h3 class="panel-title">对象属性</h3>
+
+          <div id="noSelectionHint" class="empty-selection-box">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <p>请点击画布中的对象进行编辑</p>
+          </div>
+
+          <!-- Active object controls (dynamically shown) -->
+          <div id="selectionControls" style="display:none;">
+            <!-- Text specific controls -->
+            <div class="prop-section" id="textPropsSection">
+              <label class="form-label">文字内容</label>
+              <textarea id="propTextContent" class="form-textarea" rows="2"></textarea>
+
+              <div class="form-row" style="margin-top: 8px;">
+                <div class="form-col">
+                  <label class="form-label">字体</label>
+                  <select id="propFontFamily" class="form-select">
+                    <option value="'Microsoft YaHei', sans-serif">微软雅黑</option>
+                    <option value="SimSun, serif">宋体</option>
+                    <option value="SimHei, sans-serif">黑体</option>
+                    <option value="Arial, sans-serif">Arial</option>
+                    <option value="monospace">等宽体</option>
+                  </select>
+                </div>
+                <div class="form-col-sm">
+                  <label class="form-label">字号</label>
+                  <input type="number" id="propFontSize" class="form-input" min="8" max="72" value="18">
+                </div>
+              </div>
+
+              <div class="btn-group-toggle" style="margin-top: 8px;">
+                <button class="toggle-btn" id="propBoldBtn" title="加粗"><b>B</b></button>
+                <button class="toggle-btn" id="propItalicBtn" title="斜体"><i>I</i></button>
+                <button class="toggle-btn" id="propUnderlineBtn" title="下划线"><u>U</u></button>
+                <div class="divider-v"></div>
+                <button class="toggle-btn" id="propAlignLeft" title="左对齐">左</button>
+                <button class="toggle-btn" id="propAlignCenter" title="居中">中</button>
+                <button class="toggle-btn" id="propAlignRight" title="右对齐">右</button>
+              </div>
+            </div>
+
+            <!-- Shape specific controls -->
+            <div class="prop-section" id="shapePropsSection">
+              <div class="form-row">
+                <div class="form-col">
+                  <label class="form-label">线条粗细</label>
+                  <input type="number" id="propStrokeWidth" class="form-input" min="1" max="10" value="2">
+                </div>
+                <div class="form-col" id="cornerRadiusCol">
+                  <label class="form-label">圆角半径</label>
+                  <input type="number" id="propCornerRadius" class="form-input" min="0" max="30" value="4">
+                </div>
+              </div>
+            </div>
+
+            <!-- Alignment & Layer tools -->
+            <div class="prop-section">
+              <label class="form-label">对齐与操作</label>
+              <div class="action-btn-row">
+                <button class="small-action-btn" id="btnCenterHoriz" title="水平居中">水平居中</button>
+                <button class="small-action-btn" id="btnCenterVert" title="垂直居中">垂直居中</button>
+                <button class="small-action-btn" id="btnRotate90" title="顺时针旋转90度">旋转90°</button>
+              </div>
+              <div class="action-btn-row" style="margin-top: 6px;">
+                <button class="small-action-btn" id="btnBringForward" title="上移一层">上移</button>
+                <button class="small-action-btn" id="btnSendBackward" title="下移一层">下移</button>
+                <button class="small-action-btn" id="btnDuplicate" title="复制">复制</button>
+                <button class="small-action-btn danger" id="btnDeleteObj" title="删除">删除</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Print Control Card -->
+        <div class="print-card">
+          <div class="card-header">
+            <h3 class="panel-title">打印机控制</h3>
+            <button class="scan-btn" id="btnScanBle" title="扫描附近得力蓝牙打印机">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg>
+              <span>扫描</span>
+            </button>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">目标设备 MAC 地址</label>
+            <input type="text" id="printerMacInput" class="form-input font-mono" value="5E:55:09:F0:A2:1E">
+          </div>
+
+          <div class="form-row">
+            <div class="form-col">
+              <label class="form-label">打印浓度</label>
+              <select id="printDensitySelect" class="form-select">
+                <option value="0">浅度 (Light)</option>
+                <option value="1" selected>标准 (Normal - 推荐)</option>
+                <option value="2">深度 (Dark)</option>
+              </select>
+            </div>
+            <div class="form-col">
+              <label class="form-label">打印份数</label>
+              <div class="stepper-input">
+                <button id="btnCopiesMinus">-</button>
+                <input type="number" id="copiesInput" value="1" min="1" max="20" readonly>
+                <button id="btnCopiesPlus">+</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Big Primary Print Button -->
+          <button class="huge-print-btn" id="btnExecutePrint">
+            <svg class="print-icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 6 2 18 2 18 9"></polyline>
+              <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+              <rect x="6" y="14" width="12" height="8"></rect>
+            </svg>
+            <span id="printBtnText">立即打印至得力 Q1A</span>
+          </button>
+
+          <!-- Quick Test Print Action -->
+          <div class="print-aux-row" style="display:flex; gap:8px; margin-top:8px;">
+            <button class="secondary-btn" id="btnQuickTestPrint" style="flex:1; justify-content:center; font-size:12px;" title="打印官方验证通过的自检标签">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+              打印自检测试页
+            </button>
+          </div>
+
+          <!-- Status notification area -->
+          <div class="print-status-msg" id="printStatusMsg"></div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Main WebApp Logic -->
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
