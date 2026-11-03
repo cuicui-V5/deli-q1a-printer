@@ -347,20 +347,25 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.getElementById('btnAddOuterBorder').addEventListener('click', () => {
+    const marginX = isLandscape ? 10 : 8;
+    const marginY = isLandscape ? 8 : 10;
     const border = new fabric.Rect({
-      left: 1,
-      top: 1,
-      width: canvasW - 3,
-      height: canvasH - 3,
+      left: marginX,
+      top: marginY,
+      width: canvasW - marginX * 2,
+      height: canvasH - marginY * 2,
+      rx: 8,
+      ry: 8,
       fill: 'transparent',
       stroke: '#000000',
-      strokeWidth: 1,
+      strokeWidth: 2,
       selectable: true
     });
     canvas.add(border);
     canvas.sendToBack(border);
     canvas.renderAll();
     pushHistory();
+    showToast('已添加安全圆角边框', 'success');
   });
 
   // ── Adding Icons & Symbols ──────────────────────────────────────────
@@ -446,8 +451,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Outer Border (safe margin matching rounded die-cut sticker)
       canvas.add(new fabric.Rect({
-        left: 4, top: 4, width: canvasW - 8, height: canvasH - 8,
-        rx: 6, ry: 6, fill: 'transparent', stroke: '#000', strokeWidth: 1
+        left: 10, top: 8, width: canvasW - 20, height: canvasH - 16,
+        rx: 8, ry: 8, fill: 'transparent', stroke: '#000', strokeWidth: 2
       }));
       // Title
       canvas.add(new fabric.IText('居家整理收纳', {
@@ -455,7 +460,7 @@ document.addEventListener('DOMContentLoaded', () => {
         fontSize: 17, fontWeight: 'bold', fontFamily: "'Microsoft YaHei', sans-serif"
       }));
       // Divider
-      canvas.add(new fabric.Line([14, 42, canvasW - 14, 42], { stroke: '#000', strokeWidth: 1 }));
+      canvas.add(new fabric.Line([16, 42, canvasW - 16, 42], { stroke: '#000', strokeWidth: 1.5 }));
       // Subtitle
       canvas.add(new fabric.IText('物品: 数据线 / 扩展坞', {
         left: canvasW / 2, top: 54, originX: 'center', originY: 'top',
@@ -475,14 +480,14 @@ document.addEventListener('DOMContentLoaded', () => {
       canvas.backgroundColor = '#ffffff';
 
       canvas.add(new fabric.Rect({
-        left: 4, top: 4, width: canvasW - 8, height: canvasH - 8,
-        rx: 6, ry: 6, fill: 'transparent', stroke: '#000', strokeWidth: 1
+        left: 10, top: 8, width: canvasW - 20, height: canvasH - 16,
+        rx: 8, ry: 8, fill: 'transparent', stroke: '#000', strokeWidth: 2
       }));
       canvas.add(new fabric.IText('🔌 Type-C 快充线', {
         left: 16, top: 14, originX: 'left', originY: 'top',
         fontSize: 16, fontWeight: 'bold', fontFamily: "'Microsoft YaHei', sans-serif"
       }));
-      canvas.add(new fabric.Line([14, 42, canvasW - 14, 42], { stroke: '#000', strokeWidth: 1 }));
+      canvas.add(new fabric.Line([16, 42, canvasW - 16, 42], { stroke: '#000', strokeWidth: 1.5 }));
       canvas.add(new fabric.IText('规格: 100W PD 快充', {
         left: 16, top: 54, originX: 'left', originY: 'top',
         fontSize: 13, fontFamily: "'Microsoft YaHei', sans-serif"
@@ -500,14 +505,14 @@ document.addEventListener('DOMContentLoaded', () => {
       canvas.backgroundColor = '#ffffff';
 
       canvas.add(new fabric.Rect({
-        left: 4, top: 4, width: canvasW - 8, height: canvasH - 8,
-        rx: 6, ry: 6, fill: 'transparent', stroke: '#000', strokeWidth: 1
+        left: 10, top: 8, width: canvasW - 20, height: canvasH - 16,
+        rx: 8, ry: 8, fill: 'transparent', stroke: '#000', strokeWidth: 2
       }));
       canvas.add(new fabric.IText('🍎 食品赏味保鲜标', {
         left: canvasW / 2, top: 14, originX: 'center', originY: 'top',
         fontSize: 16, fontWeight: 'bold', fontFamily: "'Microsoft YaHei', sans-serif"
       }));
-      canvas.add(new fabric.Line([14, 42, canvasW - 14, 42], { stroke: '#000', strokeWidth: 1 }));
+      canvas.add(new fabric.Line([16, 42, canvasW - 16, 42], { stroke: '#000', strokeWidth: 1.5 }));
       canvas.add(new fabric.IText('开封: 2026-11-03 12:00', {
         left: 18, top: 54, originX: 'left', originY: 'top',
         fontSize: 13, fontFamily: "'Microsoft YaHei', sans-serif"
@@ -525,8 +530,8 @@ document.addEventListener('DOMContentLoaded', () => {
       canvas.backgroundColor = '#ffffff';
 
       canvas.add(new fabric.Rect({
-        left: 4, top: 4, width: canvasW - 8, height: canvasH - 8,
-        rx: 6, ry: 6, fill: 'transparent', stroke: '#000', strokeWidth: 1
+        left: 10, top: 8, width: canvasW - 20, height: canvasH - 16,
+        rx: 8, ry: 8, fill: 'transparent', stroke: '#000', strokeWidth: 2
       }));
       canvas.add(new fabric.IText('特惠尝鲜价', {
         left: 16, top: 14, originX: 'left', originY: 'top',

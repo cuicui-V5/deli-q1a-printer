@@ -117,7 +117,8 @@ async def handle_print(req: PrintRequest):
             gray = gray.resize((WIDTH_PX, target_h), Image.Resampling.LANCZOS)
 
         # Convert to 1-bit monochrome (0=black dot, 1=white background)
-        bw_img = gray.point(lambda p: 0 if p < 128 else 1, mode='1')
+        # Using threshold 200 preserves anti-aliased vector borders and strokes from HTML5 canvas
+        bw_img = gray.point(lambda p: 0 if p < 200 else 1, mode='1')
 
         # Execute print job over BLE
         mac = req.mac.strip() if req.mac else DEFAULT_MAC

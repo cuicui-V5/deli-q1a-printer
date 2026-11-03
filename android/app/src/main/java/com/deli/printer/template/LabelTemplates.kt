@@ -11,12 +11,13 @@ object LabelTemplates {
     fun applyFoodTemplate(canvasW: Float, canvasH: Float): List<CanvasElement> {
         val dateStr = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(Date())
         return listOf(
-            // Rounded Border
+            // Rounded Border (safe margin matching rounded die-cut sticker)
             ShapeElement(
-                x = 4f, y = 4f,
-                width = canvasW - 8f, height = canvasH - 8f,
+                x = 10f, y = 8f,
+                width = canvasW - 20f, height = canvasH - 16f,
                 shapeType = ShapeType.ROUNDED_BORDER,
-                cornerRadius = 6f
+                strokeWidth = 2f,
+                cornerRadius = 8f
             ),
             // Title
             TextElement(
@@ -48,10 +49,11 @@ object LabelTemplates {
     fun applyCableTemplate(canvasW: Float, canvasH: Float): List<CanvasElement> {
         return listOf(
             ShapeElement(
-                x = 4f, y = 4f,
-                width = canvasW - 8f, height = canvasH - 8f,
+                x = 10f, y = 8f,
+                width = canvasW - 20f, height = canvasH - 16f,
                 shapeType = ShapeType.ROUNDED_BORDER,
-                cornerRadius = 6f
+                strokeWidth = 2f,
+                cornerRadius = 8f
             ),
             TextElement(
                 x = 16f, y = 14f,
@@ -59,8 +61,8 @@ object LabelTemplates {
                 textSize = 16f, isBold = true
             ),
             ShapeElement(
-                x = 14f, y = 42f,
-                width = canvasW - 28f, height = 1f,
+                x = 16f, y = 42f,
+                width = canvasW - 32f, height = 1.5f,
                 shapeType = ShapeType.DIVIDER_LINE
             ),
             TextElement(
@@ -80,10 +82,11 @@ object LabelTemplates {
         val dateStr = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
         return listOf(
             ShapeElement(
-                x = 4f, y = 4f,
-                width = canvasW - 8f, height = canvasH - 8f,
+                x = 10f, y = 8f,
+                width = canvasW - 20f, height = canvasH - 16f,
                 shapeType = ShapeType.ROUNDED_BORDER,
-                cornerRadius = 6f
+                strokeWidth = 2f,
+                cornerRadius = 8f
             ),
             TextElement(
                 x = canvasW / 2f, y = 14f,
@@ -91,8 +94,8 @@ object LabelTemplates {
                 textSize = 17f, isBold = true, isCentered = true
             ),
             ShapeElement(
-                x = 14f, y = 42f,
-                width = canvasW - 28f, height = 1f,
+                x = 16f, y = 42f,
+                width = canvasW - 32f, height = 1.5f,
                 shapeType = ShapeType.DIVIDER_LINE
             ),
             TextElement(
@@ -112,10 +115,11 @@ object LabelTemplates {
         val barcodeBmp = BarcodeEncoder.generateCode128("199026", 70, 48)
         return listOf(
             ShapeElement(
-                x = 4f, y = 4f,
-                width = canvasW - 8f, height = canvasH - 8f,
+                x = 10f, y = 8f,
+                width = canvasW - 20f, height = canvasH - 16f,
                 shapeType = ShapeType.ROUNDED_BORDER,
-                cornerRadius = 6f
+                strokeWidth = 2f,
+                cornerRadius = 8f
             ),
             TextElement(
                 x = 16f, y = 14f,
