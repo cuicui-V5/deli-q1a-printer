@@ -218,13 +218,13 @@
 
     </LinearLayout>
 
-    <!-- Center Canvas Workspace -->
+    <!-- Center Canvas Workspace (Fixed height & anchored to top - No jumping!) -->
     <com.deli.printer.ui.canvas.LabelCanvasView
         android:id="@+id/labelCanvasView"
         android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_margin="12dp"
-        app:layout_constraintBottom_toTopOf="@id/bottomContainer"
+        android:layout_height="220dp"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginTop="12dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/subBarLayout" />
@@ -238,7 +238,7 @@
         android:elevation="12dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <!-- 1. Normal State: Main ToolBar (Idle / No selection) -->
+        <!-- 1. Normal State: Main ToolBar (Pure Icon Buttons) -->
         <LinearLayout
             android:id="@+id/mainToolBar"
             android:layout_width="match_parent"
@@ -249,65 +249,42 @@
             android:visibility="visible">
 
             <!-- Add Text -->
-            <androidx.appcompat.widget.AppCompatButton
+            <ImageButton
                 android:id="@+id/btnAddText"
                 android:layout_width="0dp"
-                android:layout_height="44dp"
-                android:layout_weight="1.2"
+                android:layout_height="46dp"
+                android:layout_weight="1"
                 android:background="@drawable/bg_btn_primary"
-                android:drawableStart="@drawable/ic_add"
-                android:drawableTint="@color/white"
-                android:drawablePadding="6dp"
-                android:gravity="center"
-                android:minHeight="0dp"
-                android:minWidth="0dp"
-                android:paddingHorizontal="14dp"
-                android:paddingVertical="0dp"
-                android:text="添加文本"
-                android:textColor="@color/white"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+                android:contentDescription="添加文本"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_add"
+                app:tint="@color/white" />
 
             <!-- Templates -->
-            <androidx.appcompat.widget.AppCompatButton
+            <ImageButton
                 android:id="@+id/btnTemplates"
                 android:layout_width="0dp"
-                android:layout_height="44dp"
-                android:layout_marginStart="10dp"
+                android:layout_height="46dp"
+                android:layout_marginStart="14dp"
                 android:layout_weight="1"
                 android:background="@drawable/bg_btn_secondary"
-                android:drawableStart="@drawable/ic_templates"
-                android:drawableTint="@color/text_primary"
-                android:drawablePadding="6dp"
-                android:gravity="center"
-                android:minHeight="0dp"
-                android:minWidth="0dp"
-                android:paddingHorizontal="12dp"
-                android:paddingVertical="0dp"
-                android:text="模版库"
-                android:textColor="@color/text_primary"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+                android:contentDescription="模版库"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_templates"
+                app:tint="@color/text_primary" />
 
             <!-- Add Barcode / QR -->
-            <androidx.appcompat.widget.AppCompatButton
+            <ImageButton
                 android:id="@+id/btnAddBarcode"
-                android:layout_width="wrap_content"
-                android:layout_height="44dp"
-                android:layout_marginStart="10dp"
+                android:layout_width="0dp"
+                android:layout_height="46dp"
+                android:layout_marginStart="14dp"
+                android:layout_weight="1"
                 android:background="@drawable/bg_btn_secondary"
-                android:drawableStart="@drawable/ic_qr_code"
-                android:drawableTint="@color/text_primary"
-                android:drawablePadding="6dp"
-                android:gravity="center"
-                android:minHeight="0dp"
-                android:minWidth="0dp"
-                android:paddingHorizontal="14dp"
-                android:paddingVertical="0dp"
-                android:text="条码/QR"
-                android:textColor="@color/text_primary"
-                android:textSize="13sp"
-                android:textStyle="bold" />
+                android:contentDescription="条码/二维码"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_qr_code"
+                app:tint="@color/text_primary" />
 
         </LinearLayout>
 

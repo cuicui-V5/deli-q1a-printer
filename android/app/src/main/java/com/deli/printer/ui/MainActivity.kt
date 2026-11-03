@@ -25,6 +25,7 @@ import com.deli.printer.ui.dialog.*
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.io.File
 
 class MainActivity : AppCompatActivity() {
 
@@ -71,8 +72,8 @@ class MainActivity : AppCompatActivity() {
         setupListeners()
         observeBleState()
 
-        // Apply default single-line large text template
-        applyTemplate { w, h -> LabelTemplates.createDefaultExample(w, h) }
+        // Restore last canvas state or fallback to default
+        restoreLastCanvasState()
 
         // Check BLE Permissions & Auto Connect
         if (!BlePermissionHelper.hasPermissions(this)) {
@@ -80,6 +81,11 @@ class MainActivity : AppCompatActivity() {
         } else {
             autoConnectPrinter()
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        saveCanvasState()
     }
 
     override fun onRequestPermissionsResult(
@@ -140,6 +146,29 @@ class MainActivity : AppCompatActivity() {
 
         canvasView.setCanvasDimensions(wDots, hDots)
         tvPaperSpec.text = "${currentSpec.widthMm}×${currentSpec.lengthMm} mm (${if (isLandscape) "横向" else "纵向"})"
+    }
+
+    private fun saveCanvasState() {
+        try {
+            val json = CanvasElementSerializer.toJson(canvasView.getAllElements())
+            File(filesDir, "last_canvas.json").writeText(json)
+        } catch (_: Exception) {}
+    }
+
+    private fun restoreLastCanvasState() {
+        val file = File(filesDir, "last_canvas.json")
+        if (file.exists()) {
+            try {
+                val json = file.readText()
+                val restored = CanvasElementSerializer.fromJson(json)
+                if (restored.isNotEmpty()) {
+                    canvasView.setElements(restored)
+                    return
+                }
+            } catch (_: Exception) {}
+        }
+        // Fallback default
+        applyTemplate { w, h -> LabelTemplates.createDefaultExample(w, h) }
     }
 
     private fun populateInspector(elem: TextElement) {
@@ -207,6 +236,10 @@ class MainActivity : AppCompatActivity() {
             isUpdatingInspector = false
         }
 
+        canvasView.onElementModified = {
+            saveCanvasState()
+        }
+
         // Direct Text Input Live Editing
         etInspectorText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -215,6 +248,7 @@ class MainActivity : AppCompatActivity() {
                 val sel = canvasView.getSelectedElement() as? TextElement ?: return
                 sel.text = s?.toString() ?: ""
                 canvasView.invalidate()
+                saveCanvasState()
             }
             override fun afterTextChanged(s: Editable?) {}
         })
@@ -232,6 +266,7 @@ class MainActivity : AppCompatActivity() {
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
                 canvasView.notifyElementModified()
+                saveCanvasState()
             }
         })
 
@@ -241,6 +276,7 @@ class MainActivity : AppCompatActivity() {
             sel.isBold = !sel.isBold
             updateInspectorStyleButtons(sel)
             canvasView.notifyElementModified()
+            saveCanvasState()
         }
 
         // Align Left
@@ -250,6 +286,7 @@ class MainActivity : AppCompatActivity() {
             sel.x = 10f
             updateInspectorStyleButtons(sel)
             canvasView.notifyElementModified()
+            saveCanvasState()
         }
 
         // Align Center
@@ -259,18 +296,21 @@ class MainActivity : AppCompatActivity() {
             sel.x = canvasView.canvasDotWidth / 2f
             updateInspectorStyleButtons(sel)
             canvasView.notifyElementModified()
+            saveCanvasState()
         }
 
         // Delete Button
         btnInspectorDelete.setOnClickListener {
             hideSoftKeyboard()
             canvasView.removeSelected()
+            saveCanvasState()
         }
 
         // Done Button
         btnInspectorDone.setOnClickListener {
             hideSoftKeyboard()
             canvasView.deselectAll()
+            saveCanvasState()
         }
 
         // Settings Dialog
@@ -329,6 +369,7 @@ class MainActivity : AppCompatActivity() {
         canvasView.onHistoryChanged = { canUndo, canRedo ->
             btnUndo.isEnabled = canUndo
             btnRedo.isEnabled = canRedo
+            saveCanvasState()
         }
 
         // Clear Canvas
@@ -338,6 +379,7 @@ class MainActivity : AppCompatActivity() {
                 .setMessage("确定清空当前画板上的所有元素吗？")
                 .setPositiveButton("清空") { _, _ ->
                     canvasView.clearCanvas()
+                    saveCanvasState()
                     showToast("画板已清空")
                 }
                 .setNegativeButton("取消", null)
@@ -357,6 +399,7 @@ class MainActivity : AppCompatActivity() {
                 isCentered = true
             )
             canvasView.addElement(newElem)
+            saveCanvasState()
             etInspectorText.requestFocus()
         }
 
@@ -365,16 +408,26 @@ class MainActivity : AppCompatActivity() {
             BarcodeDialog().apply {
                 onConfirm = { barcodeElem ->
                     canvasView.addElement(barcodeElem)
+                    saveCanvasState()
                 }
             }.show(supportFragmentManager, "BarcodeDialog")
         }
 
-        // Templates Menu
+        // Visual Templates Dialog
         findViewById<View>(R.id.btnTemplates).setOnClickListener {
-            showTemplatesMenu()
+            TemplateLibraryDialog().apply {
+                currentCanvasElements = canvasView.getAllElements()
+                canvasWidth = canvasView.canvasDotWidth.toFloat()
+                canvasHeight = canvasView.canvasDotHeight.toFloat()
+                onTemplateSelected = { elements ->
+                    canvasView.setElements(elements)
+                    saveCanvasState()
+                    showToast("模版载入成功")
+                }
+            }.show(supportFragmentManager, "TemplateLibraryDialog")
         }
 
-        // Execute Direct Print (No secondary confirm dialog!)
+        // Execute Direct Print
         btnPrint.setOnClickListener {
             val state = bleManager.connectionState.value
             if (state !is BleConnectionState.Connected) {
@@ -406,28 +459,12 @@ class MainActivity : AppCompatActivity() {
         imm?.hideSoftInputFromWindow(etInspectorText.windowToken, 0)
     }
 
-    private fun showTemplatesMenu() {
-        val options = arrayOf(
-            "🔩 银色内六角螺丝 (M3x6)",
-            "⚡ 100Ω电阻 (1206)"
-        )
-        AlertDialog.Builder(this)
-            .setTitle("选择标签模版")
-            .setItems(options) { _, which ->
-                when (which) {
-                    0 -> applyTemplate { w, h -> LabelTemplates.applyScrewTemplate(w, h) }
-                    1 -> applyTemplate { w, h -> LabelTemplates.applyResistorTemplate(w, h) }
-                }
-                showToast("模版应用成功")
-            }
-            .show()
-    }
-
     private fun applyTemplate(builder: (w: Float, h: Float) -> List<CanvasElement>) {
         val w = canvasView.canvasDotWidth.toFloat()
         val h = canvasView.canvasDotHeight.toFloat()
         val elements = builder(w, h)
         canvasView.setElements(elements)
+        saveCanvasState()
     }
 
     private fun observeBleState() {

@@ -89,13 +89,20 @@ class LabelCanvasView @JvmOverloads constructor(
 
     init {
         try {
-            val tf = Typeface.createFromAsset(context.assets, "fonts/NotoSansSC.ttf")
+            val tf = Typeface.createFromAsset(context.assets, "fonts/AlibabaPuHuiTi-Heavy.ttf")
             textPaint.typeface = tf
         } catch (_: Exception) {
-            textPaint.typeface = Typeface.DEFAULT
+            try {
+                val tf = Typeface.createFromAsset(context.assets, "fonts/NotoSansSC.ttf")
+                textPaint.typeface = tf
+            } catch (_: Exception) {
+                textPaint.typeface = Typeface.DEFAULT_BOLD
+            }
         }
         saveStateToHistory()
     }
+
+    fun getAllElements(): List<CanvasElement> = elements.map { it.copyElement() }
 
     fun setCanvasDimensions(widthDots: Int, heightDots: Int) {
         this.canvasDotWidth = widthDots
