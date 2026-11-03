@@ -2,6 +2,7 @@ package com.deli.printer.ui
 
 import android.bluetooth.BluetoothManager
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -28,6 +29,7 @@ import kotlinx.coroutines.launch
 class MainActivity : AppCompatActivity() {
 
     private val bleManager get() = DeliApp.instance.bleManager
+    private lateinit var prefs: SharedPreferences
 
     private lateinit var canvasView: LabelCanvasView
     private lateinit var tvPaperSpec: TextView
@@ -46,18 +48,24 @@ class MainActivity : AppCompatActivity() {
     private lateinit var etInspectorText: EditText
     private lateinit var sbInspectorTextSize: SeekBar
     private lateinit var tvInspectorSizeValue: TextView
-    private lateinit var btnInspectorBold: Button
-    private lateinit var btnInspectorAlignLeft: Button
-    private lateinit var btnInspectorAlignCenter: Button
-    private lateinit var btnInspectorDelete: Button
+    private lateinit var btnInspectorBold: ImageButton
+    private lateinit var btnInspectorAlignLeft: ImageButton
+    private lateinit var btnInspectorAlignCenter: ImageButton
+    private lateinit var btnInspectorDelete: ImageButton
 
     private var isUpdatingInspector: Boolean = false
+    private var currentDensity: Int = 2 // Default: 2 (高浓度 / 深度)
     private var currentSpec: PaperSpec = PaperSpec.SPEC_15_30
     private var isLandscape: Boolean = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        prefs = getSharedPreferences("deli_printer_prefs", Context.MODE_PRIVATE)
+        currentDensity = prefs.getInt("key_density", 2) // Default to High (2)
+        val savedSpecName = prefs.getString("key_spec", PaperSpec.SPEC_15_30.name)
+        currentSpec = PaperSpec.ALL_SPECS.find { it.name == savedSpecName } ?: PaperSpec.SPEC_15_30
 
         initViews()
         setupListeners()
@@ -150,35 +158,29 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateInspectorStyleButtons(elem: TextElement) {
-        val white = ContextCompat.getColor(this, R.color.white)
         val textPrimary = ContextCompat.getColor(this, R.color.text_primary)
+        val white = ContextCompat.getColor(this, R.color.white)
 
         if (elem.isBold) {
             btnInspectorBold.setBackgroundResource(R.drawable.bg_btn_selected)
-            btnInspectorBold.setTextColor(white)
-            btnInspectorBold.compoundDrawables[0]?.setTint(white)
+            btnInspectorBold.setColorFilter(white)
         } else {
             btnInspectorBold.setBackgroundResource(R.drawable.bg_btn_secondary)
-            btnInspectorBold.setTextColor(textPrimary)
-            btnInspectorBold.compoundDrawables[0]?.setTint(textPrimary)
+            btnInspectorBold.setColorFilter(textPrimary)
         }
 
         if (!elem.isCentered) {
             btnInspectorAlignLeft.setBackgroundResource(R.drawable.bg_btn_selected)
-            btnInspectorAlignLeft.setTextColor(white)
-            btnInspectorAlignLeft.compoundDrawables[0]?.setTint(white)
+            btnInspectorAlignLeft.setColorFilter(white)
 
             btnInspectorAlignCenter.setBackgroundResource(R.drawable.bg_btn_secondary)
-            btnInspectorAlignCenter.setTextColor(textPrimary)
-            btnInspectorAlignCenter.compoundDrawables[0]?.setTint(textPrimary)
+            btnInspectorAlignCenter.setColorFilter(textPrimary)
         } else {
             btnInspectorAlignCenter.setBackgroundResource(R.drawable.bg_btn_selected)
-            btnInspectorAlignCenter.setTextColor(white)
-            btnInspectorAlignCenter.compoundDrawables[0]?.setTint(white)
+            btnInspectorAlignCenter.setColorFilter(white)
 
             btnInspectorAlignLeft.setBackgroundResource(R.drawable.bg_btn_secondary)
-            btnInspectorAlignLeft.setTextColor(textPrimary)
-            btnInspectorAlignLeft.compoundDrawables[0]?.setTint(textPrimary)
+            btnInspectorAlignLeft.setColorFilter(textPrimary)
         }
     }
 
@@ -271,13 +273,40 @@ class MainActivity : AppCompatActivity() {
             canvasView.deselectAll()
         }
 
-        // Spec Dialog
+        // Settings Dialog
+        findViewById<View>(R.id.btnSettings).setOnClickListener {
+            SettingsDialog().apply {
+                currentDensity = this@MainActivity.currentDensity
+                currentSpec = this@MainActivity.currentSpec
+                onSettingsSaved = { newDensity, newSpec ->
+                    this@MainActivity.currentDensity = newDensity
+                    this@MainActivity.currentSpec = newSpec
+                    prefs.edit()
+                        .putInt("key_density", newDensity)
+                        .putString("key_spec", newSpec.name)
+                        .apply()
+                    updateCanvasGeometry()
+                    val densityName = when (newDensity) {
+                        0 -> "浅度"
+                        1 -> "标准"
+                        else -> "高浓度"
+                    }
+                    showToast("设置已保存: 浓度[$densityName], 规格[${newSpec.name}]")
+                }
+                onScanRequested = {
+                    DeviceScanDialog().show(supportFragmentManager, "DeviceScanDialog")
+                }
+            }.show(supportFragmentManager, "SettingsDialog")
+        }
+
+        // Spec Container Click -> Quick switch spec
         findViewById<View>(R.id.specContainer).setOnClickListener {
             PaperSpecDialog().apply {
                 onSpecSelected = { spec ->
                     currentSpec = spec
+                    prefs.edit().putString("key_spec", spec.name).apply()
                     updateCanvasGeometry()
-                    showToast("已选择耗材: ${spec.name}")
+                    showToast("已切换耗材规格: ${spec.name}")
                 }
             }.show(supportFragmentManager, "PaperSpecDialog")
         }
@@ -286,7 +315,7 @@ class MainActivity : AppCompatActivity() {
         findViewById<View>(R.id.btnRotateCanvas).setOnClickListener {
             isLandscape = !isLandscape
             updateCanvasGeometry()
-            showToast(if (isLandscape) "已切换为横向模式" else "已切换为纵向模式")
+            showToast(if (isLandscape) "已切换为横向" else "已切换为纵向")
         }
 
         // BLE Device Scanner Dialog
@@ -345,20 +374,30 @@ class MainActivity : AppCompatActivity() {
             showTemplatesMenu()
         }
 
-        // Execute Print
+        // Execute Direct Print (No secondary confirm dialog!)
         btnPrint.setOnClickListener {
             val state = bleManager.connectionState.value
             if (state !is BleConnectionState.Connected) {
-                showToast("请先连接得力 Q1A 打印机")
+                showToast("打印机未连接，正在连接默认设备...")
+                autoConnectPrinter()
                 DeviceScanDialog().show(supportFragmentManager, "DeviceScanDialog")
                 return@setOnClickListener
             }
 
             val bmp = canvasView.exportToBitmap()
-            PrintDialog().apply {
-                previewBitmap = bmp
-                isLandscape = this@MainActivity.isLandscape
-            }.show(supportFragmentManager, "PrintDialog")
+            showToast("正在发送至得力 Q1A 打印...")
+
+            lifecycleScope.launch {
+                val success = bleManager.printBitmap(
+                    bitmap = bmp,
+                    density = currentDensity, // Default: High (2)
+                    copies = 1,
+                    isLandscape = this@MainActivity.isLandscape
+                )
+                if (success) {
+                    showToast("打印完成！")
+                }
+            }
         }
     }
 
@@ -400,11 +439,11 @@ class MainActivity : AppCompatActivity() {
                         statusIndicator.setBackgroundResource(R.drawable.bg_dot_connected)
                     }
                     is BleConnectionState.Connecting -> {
-                        tvBleStatus.text = "正在连接..."
+                        tvBleStatus.text = "连接中..."
                         statusIndicator.setBackgroundResource(R.drawable.bg_dot_connecting)
                     }
                     is BleConnectionState.Disconnected -> {
-                        tvBleStatus.text = "未连接设备"
+                        tvBleStatus.text = "未连接"
                         statusIndicator.setBackgroundResource(R.drawable.bg_dot_disconnected)
                     }
                     is BleConnectionState.Printing -> {
@@ -412,7 +451,7 @@ class MainActivity : AppCompatActivity() {
                         statusIndicator.setBackgroundResource(R.drawable.bg_dot_connecting)
                     }
                     is BleConnectionState.Error -> {
-                        tvBleStatus.text = "连接异常"
+                        tvBleStatus.text = "异常"
                         statusIndicator.setBackgroundResource(R.drawable.bg_dot_disconnected)
                         showToast(state.message)
                     }
