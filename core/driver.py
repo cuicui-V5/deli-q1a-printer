@@ -15,6 +15,7 @@ from .protocol import (
     NOTIFY_CHAR,
     EVENT_CHAR,
     WIDTH_PX,
+    MAX_WIDTH_PX,
     CMD_ENABLE,
     CMD_WAKEUP,
     CMD_ALIGN_TOP,
@@ -113,8 +114,9 @@ class DeliPrinter:
         """
         Executes a continuous, seamless print job from a 1-bit monochrome PIL Image.
         """
-        if img.width != WIDTH_PX:
-            raise ValueError(f"Image width must be exactly {WIDTH_PX} dots, got {img.width}")
+        # Validate printhead width limit
+        if img.width > MAX_WIDTH_PX:
+            raise ValueError(f"Image width ({img.width} dots) exceeds max printhead width ({MAX_WIDTH_PX} dots)")
 
         bitmap_bytes = bitmap_to_raw_bytes(img)
         w_bytes = (img.width + 7) // 8

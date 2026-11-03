@@ -106,13 +106,13 @@ async def handle_print(req: PrintRequest):
         bg.paste(img, mask=img.split()[3]) # 3 is alpha
         gray = bg.convert('L')
 
-        # Deli Q1A printhead is 96 dots wide.
-        # If user edited in Landscape mode (e.g. 216x96), rotate 90 degrees to print along 30mm length
+        # Deli Q1A thermal head spans up to 120 dots (15mm tape) or 96 dots (12mm tape).
+        # If user edited in Landscape mode (e.g. 240x120), rotate 90 degrees to print along 30mm length
         if gray.width > gray.height:
             gray = gray.rotate(90, expand=True)
 
-        # Ensure width is exactly 96 dots
-        if gray.width != WIDTH_PX:
+        # Ensure width does not exceed physical printhead limit (120 dots)
+        if gray.width > WIDTH_PX:
             target_h = int(gray.height * (WIDTH_PX / gray.width))
             gray = gray.resize((WIDTH_PX, target_h), Image.Resampling.LANCZOS)
 

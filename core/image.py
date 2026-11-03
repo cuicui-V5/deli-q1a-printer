@@ -55,13 +55,13 @@ def bitmap_to_raw_bytes(img: Image.Image) -> bytes:
 def render_text_label(text: str, orientation: str = 'landscape', border: bool = True, font_size: int = None) -> Image.Image:
     """
     Renders text onto a monochrome canvas sized for 15mm x 30mm labels.
-    - landscape: 216 wide x 96 high, rotated 90 degrees to (96, 216).
-    - portrait:  96 wide x 216 high.
+    - landscape: 240 wide x 120 high, rotated 90 degrees to (120, 240).
+    - portrait:  120 wide x 240 high.
     """
     if orientation == 'landscape':
-        cw, ch = HEIGHT_PX, WIDTH_PX  # 216 x 96
+        cw, ch = HEIGHT_PX, WIDTH_PX  # 240 x 120
     else:
-        cw, ch = WIDTH_PX, HEIGHT_PX  # 96 x 216
+        cw, ch = WIDTH_PX, HEIGHT_PX  # 120 x 240
 
     img = Image.new('1', (cw, ch), color=1) # 1 = white
     draw = ImageDraw.Draw(img)

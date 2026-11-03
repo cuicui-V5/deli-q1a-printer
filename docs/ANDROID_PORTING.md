@@ -37,8 +37,9 @@ object DeliProtocol {
     val WRITE_CHAR_UUID: UUID = UUID.fromString("0000ff02-0000-1000-8000-00805f9b34fb")
     val NOTIFY_CHAR_UUID: UUID = UUID.fromString("0000ff01-0000-1000-8000-00805f9b34fb")
 
-    const val WIDTH_PX = 96       // 12 字节 / 行
-    const val HEIGHT_PX = 216     // 标准 27mm 打印高度
+    const val WIDTH_PX = 120      // 15mm 耗材满幅: 15 字节 / 行 (120 点)
+    const val HEIGHT_PX = 240     // 30mm 耗材长度: 240 行点阵 (30mm @ 8 dots/mm)
+    const val MAX_WIDTH_PX = 120  // 热敏打印头最大点数 (15mm 满幅)
 
     // 核心控制指令
     val CMD_ENABLE     = byteArrayOf(0x10.toByte(), 0xFF.toByte(), 0xF1.toByte(), 0x03.toByte())
@@ -69,7 +70,7 @@ object DeliProtocol {
 
 ## 3. Android Bitmap 转 1-Bit 单色点阵 (Kotlin)
 
-得力打印头是每行 96 个点（12 字节），最高位（MSB）在左，1 为黑色（加热），0 为白色背景：
+得力 Q1A 打印头在 15mm 纸张下对应每行 120 个点（15 字节），最高位（MSB）在左，1 为黑色（发热燃烧），0 为白色背景：
 
 ```kotlin
 package com.example.deliprinter.core
@@ -81,21 +82,21 @@ import android.graphics.Matrix
 object ImageUtils {
 
     /**
-     * 将 Android Bitmap 转换并旋转为打印机所需的 96 宽度的 1-Bit 字节数组
+     * 将 Android Bitmap 转换并旋转为打印机所需的 120 宽度的 1-Bit 字节数组 (15x30mm 满幅)
      */
     fun convertBitmapToRasterBytes(source: Bitmap): ByteArray {
-        // 如果是横向设计的标签 (例如 216 宽 x 96 高)，旋转 90 度为纵向 (96 宽 x 216 高)
+        // 如果是横向设计的标签 (例如 240 宽 x 120 高)，旋转 90 度为纵向 (120 宽 x 240 高)
         var bitmap = source
         if (bitmap.width > bitmap.height) {
             val matrix = Matrix().apply { postRotate(90f) }
             bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
         }
 
-        // 确保宽度精确缩放到 96 像素
-        if (bitmap.width != DeliProtocol.WIDTH_PX) {
-            val scale = DeliProtocol.WIDTH_PX.toFloat() / bitmap.width
+        // 确保宽度与打印纸满幅匹配 (15mm 纸为 120 像素)
+        if (bitmap.width > DeliProtocol.MAX_WIDTH_PX) {
+            val scale = DeliProtocol.MAX_WIDTH_PX.toFloat() / bitmap.width
             val targetHeight = (bitmap.height * scale).toInt()
-            bitmap = Bitmap.createScaledBitmap(bitmap, DeliProtocol.WIDTH_PX, targetHeight, true)
+            bitmap = Bitmap.createScaledBitmap(bitmap, DeliProtocol.MAX_WIDTH_PX, targetHeight, true)
         }
 
         val width = bitmap.width

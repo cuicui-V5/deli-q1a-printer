@@ -127,6 +127,24 @@ body {
   height: 6px;
   border-radius: 50%;
   background-color: var(--brand-color);
+  flex-shrink: 0;
+}
+
+.spec-select {
+  border: none;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-primary);
+  outline: none;
+  cursor: pointer;
+  padding: 0 2px;
+  font-family: inherit;
+}
+
+.spec-select option {
+  background-color: var(--bg-card);
+  color: var(--text-primary);
 }
 
 .icon-btn-sm {

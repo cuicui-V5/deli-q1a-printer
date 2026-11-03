@@ -30,7 +30,13 @@
 
         <div class="spec-pill">
           <span class="dot"></span>
-          <span id="labelSpecDisplay">15 × 30 mm (间隙纸)</span>
+          <select id="paperSizeSelect" class="spec-select" title="选择标签纸物理规格">
+            <option value="15x30" selected>15 × 30 mm (标准间隙纸)</option>
+            <option value="15x40">15 × 40 mm (长间隙纸)</option>
+            <option value="15x50">15 × 50 mm (加大间隙纸)</option>
+            <option value="12x30">12 × 30 mm (12mm规格)</option>
+            <option value="12x40">12 × 40 mm (12mm规格)</option>
+          </select>
           <button class="icon-btn-sm" id="btnRotateCanvas" title="旋转方向 (横向/纵向)">
             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"></path>

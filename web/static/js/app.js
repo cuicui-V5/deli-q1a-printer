@@ -6,14 +6,24 @@
 document.addEventListener('DOMContentLoaded', () => {
   // ── Geometry & State ────────────────────────────────────────────────
   const DPI = 203;
-  const MM_TO_PX = 8; // ~8 dots per mm at 203 DPI
+  const MM_TO_PX = 8; // ~8 dots per mm at 203 DPI (203 / 25.4 ≈ 7.992)
 
-  // 15mm x 30mm label:
-  // Printable area: 96px width x 216px length
+  // Label paper geometry definitions (in mm, 203 DPI = 8 dots/mm)
+  const PAPER_PRESETS = {
+    '15x30': { widthMm: 15, lengthMm: 30, name: '15 × 30 mm (标准间隙纸)' },
+    '15x40': { widthMm: 15, lengthMm: 40, name: '15 × 40 mm (长间隙纸)' },
+    '15x50': { widthMm: 15, lengthMm: 50, name: '15 × 50 mm (加大间隙纸)' },
+    '12x30': { widthMm: 12, lengthMm: 30, name: '12 × 30 mm (12mm规格)' },
+    '12x40': { widthMm: 12, lengthMm: 40, name: '12 × 40 mm (12mm规格)' },
+  };
+
+  let currentPresetKey = '15x30';
   let isLandscape = true;
-  let canvasW = 216; // 27mm
-  let canvasH = 96;  // 12mm
-  let zoomLevel = 3.0; // 300% display zoom for comfortable editing
+  // 15mm x 30mm label @ 8 dots/mm:
+  // Feed direction (length): 30mm x 8 = 240px; Printhead direction (width): 15mm x 8 = 120px
+  let canvasW = 240; // 30mm in Landscape
+  let canvasH = 120; // 15mm in Landscape
+  let zoomLevel = 2.5; // 250% display zoom for comfortable editing
 
   // Fabric Canvas Instance
   const canvas = new fabric.Canvas('labelCanvas', {
@@ -55,23 +65,46 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('zoomLevelText').innerText = `${Math.round(zoomLevel * 100)}%`;
   }
 
-  function setOrientation(landscape) {
-    isLandscape = landscape;
+  function updateDimensions() {
+    const preset = PAPER_PRESETS[currentPresetKey] || PAPER_PRESETS['15x30'];
+    const wPx = preset.widthMm * MM_TO_PX;   // e.g. 15 * 8 = 120
+    const lPx = preset.lengthMm * MM_TO_PX;  // e.g. 30 * 8 = 240
+
     if (isLandscape) {
-      canvasW = 216;
-      canvasH = 96;
-      document.getElementById('labelSpecDisplay').innerText = "30 × 15 mm (横向间隙纸)";
-      document.getElementById('rulerTag').innerText = "30 × 15 mm";
+      canvasW = lPx;
+      canvasH = wPx;
+      const ruler = document.getElementById('rulerTag');
+      if (ruler) ruler.innerText = `${preset.lengthMm} × ${preset.widthMm} mm`;
     } else {
-      canvasW = 96;
-      canvasH = 216;
-      document.getElementById('labelSpecDisplay').innerText = "15 × 30 mm (纵向间隙纸)";
-      document.getElementById('rulerTag').innerText = "15 × 30 mm";
+      canvasW = wPx;
+      canvasH = lPx;
+      const ruler = document.getElementById('rulerTag');
+      if (ruler) ruler.innerText = `${preset.widthMm} × ${preset.lengthMm} mm`;
     }
     applyZoom();
+  }
+
+  function setOrientation(landscape) {
+    isLandscape = landscape;
+    updateDimensions();
     canvas.clear();
     canvas.backgroundColor = '#ffffff';
     pushHistory();
+    const preset = PAPER_PRESETS[currentPresetKey] || PAPER_PRESETS['15x30'];
+    showToast(isLandscape ? `已切换为横向模式 (${preset.lengthMm}×${preset.widthMm}mm)` : `已切换为纵向模式 (${preset.widthMm}×${preset.lengthMm}mm)`, 'info');
+  }
+
+  // Paper Size Selector
+  const paperSelect = document.getElementById('paperSizeSelect');
+  if (paperSelect) {
+    paperSelect.addEventListener('change', (e) => {
+      currentPresetKey = e.target.value;
+      updateDimensions();
+      canvas.clear();
+      canvas.backgroundColor = '#ffffff';
+      pushHistory();
+      showToast(`已切换规格: ${PAPER_PRESETS[currentPresetKey].name}`, 'info');
+    });
   }
 
   // ── Toolbox Navigation ──────────────────────────────────────────────
@@ -411,27 +444,27 @@ document.addEventListener('DOMContentLoaded', () => {
       canvas.clear();
       canvas.backgroundColor = '#ffffff';
 
-      // Outer Border
+      // Outer Border (safe margin matching rounded die-cut sticker)
       canvas.add(new fabric.Rect({
-        left: 2, top: 2, width: canvasW - 5, height: canvasH - 5,
-        fill: 'transparent', stroke: '#000', strokeWidth: 1
+        left: 4, top: 4, width: canvasW - 8, height: canvasH - 8,
+        rx: 6, ry: 6, fill: 'transparent', stroke: '#000', strokeWidth: 1
       }));
       // Title
       canvas.add(new fabric.IText('居家整理收纳', {
-        left: canvasW / 2, top: 12, originX: 'center', originY: 'top',
-        fontSize: 16, fontWeight: 'bold', fontFamily: "'Microsoft YaHei', sans-serif"
+        left: canvasW / 2, top: 14, originX: 'center', originY: 'top',
+        fontSize: 17, fontWeight: 'bold', fontFamily: "'Microsoft YaHei', sans-serif"
       }));
       // Divider
-      canvas.add(new fabric.Line([10, 36, canvasW - 10, 36], { stroke: '#000', strokeWidth: 1 }));
+      canvas.add(new fabric.Line([14, 42, canvasW - 14, 42], { stroke: '#000', strokeWidth: 1 }));
       // Subtitle
       canvas.add(new fabric.IText('物品: 数据线 / 扩展坞', {
-        left: canvasW / 2, top: 44, originX: 'center', originY: 'top',
-        fontSize: 12, fontFamily: "'Microsoft YaHei', sans-serif"
+        left: canvasW / 2, top: 54, originX: 'center', originY: 'top',
+        fontSize: 13, fontFamily: "'Microsoft YaHei', sans-serif"
       }));
       // Subtext
       canvas.add(new fabric.IText('2026-11-03 整理于书房', {
-        left: canvasW / 2, top: 68, originX: 'center', originY: 'top',
-        fontSize: 10, fontFamily: "'Microsoft YaHei', sans-serif"
+        left: canvasW / 2, top: 84, originX: 'center', originY: 'top',
+        fontSize: 11, fontFamily: "'Microsoft YaHei', sans-serif"
       }));
       canvas.renderAll();
       pushHistory();
@@ -442,21 +475,21 @@ document.addEventListener('DOMContentLoaded', () => {
       canvas.backgroundColor = '#ffffff';
 
       canvas.add(new fabric.Rect({
-        left: 2, top: 2, width: canvasW - 5, height: canvasH - 5,
-        fill: 'transparent', stroke: '#000', strokeWidth: 1
+        left: 4, top: 4, width: canvasW - 8, height: canvasH - 8,
+        rx: 6, ry: 6, fill: 'transparent', stroke: '#000', strokeWidth: 1
       }));
       canvas.add(new fabric.IText('🔌 Type-C 快充线', {
-        left: 12, top: 14, originX: 'left', originY: 'top',
-        fontSize: 15, fontWeight: 'bold', fontFamily: "'Microsoft YaHei', sans-serif"
+        left: 16, top: 14, originX: 'left', originY: 'top',
+        fontSize: 16, fontWeight: 'bold', fontFamily: "'Microsoft YaHei', sans-serif"
       }));
-      canvas.add(new fabric.Line([10, 38, canvasW - 10, 38], { stroke: '#000', strokeWidth: 1 }));
+      canvas.add(new fabric.Line([14, 42, canvasW - 14, 42], { stroke: '#000', strokeWidth: 1 }));
       canvas.add(new fabric.IText('规格: 100W PD 快充', {
-        left: 12, top: 46, originX: 'left', originY: 'top',
-        fontSize: 12, fontFamily: "'Microsoft YaHei', sans-serif"
+        left: 16, top: 54, originX: 'left', originY: 'top',
+        fontSize: 13, fontFamily: "'Microsoft YaHei', sans-serif"
       }));
       canvas.add(new fabric.IText('位置: 桌面主显示器', {
-        left: 12, top: 68, originX: 'left', originY: 'top',
-        fontSize: 11, fontFamily: "'Microsoft YaHei', sans-serif"
+        left: 16, top: 84, originX: 'left', originY: 'top',
+        fontSize: 12, fontFamily: "'Microsoft YaHei', sans-serif"
       }));
       canvas.renderAll();
       pushHistory();
@@ -467,21 +500,21 @@ document.addEventListener('DOMContentLoaded', () => {
       canvas.backgroundColor = '#ffffff';
 
       canvas.add(new fabric.Rect({
-        left: 2, top: 2, width: canvasW - 5, height: canvasH - 5,
-        rx: 4, ry: 4, fill: 'transparent', stroke: '#000', strokeWidth: 1
+        left: 4, top: 4, width: canvasW - 8, height: canvasH - 8,
+        rx: 6, ry: 6, fill: 'transparent', stroke: '#000', strokeWidth: 1
       }));
       canvas.add(new fabric.IText('🍎 食品赏味保鲜标', {
-        left: canvasW / 2, top: 12, originX: 'center', originY: 'top',
-        fontSize: 15, fontWeight: 'bold', fontFamily: "'Microsoft YaHei', sans-serif"
+        left: canvasW / 2, top: 14, originX: 'center', originY: 'top',
+        fontSize: 16, fontWeight: 'bold', fontFamily: "'Microsoft YaHei', sans-serif"
       }));
-      canvas.add(new fabric.Line([12, 34, canvasW - 12, 34], { stroke: '#000', strokeWidth: 1 }));
-      canvas.add(new fabric.IText('开封: 2026-11-03', {
-        left: 16, top: 44, originX: 'left', originY: 'top',
-        fontSize: 12, fontFamily: "'Microsoft YaHei', sans-serif"
+      canvas.add(new fabric.Line([14, 42, canvasW - 14, 42], { stroke: '#000', strokeWidth: 1 }));
+      canvas.add(new fabric.IText('开封: 2026-11-03 12:00', {
+        left: 18, top: 54, originX: 'left', originY: 'top',
+        fontSize: 13, fontFamily: "'Microsoft YaHei', sans-serif"
       }));
       canvas.add(new fabric.IText('保质: 7天内冷藏食用', {
-        left: 16, top: 66, originX: 'left', originY: 'top',
-        fontSize: 11, fontWeight: 'bold', fontFamily: "'Microsoft YaHei', sans-serif"
+        left: 18, top: 84, originX: 'left', originY: 'top',
+        fontSize: 13, fontWeight: 'bold', fontFamily: "'Microsoft YaHei', sans-serif"
       }));
       canvas.renderAll();
       pushHistory();
@@ -491,24 +524,28 @@ document.addEventListener('DOMContentLoaded', () => {
       canvas.clear();
       canvas.backgroundColor = '#ffffff';
 
+      canvas.add(new fabric.Rect({
+        left: 4, top: 4, width: canvasW - 8, height: canvasH - 8,
+        rx: 6, ry: 6, fill: 'transparent', stroke: '#000', strokeWidth: 1
+      }));
       canvas.add(new fabric.IText('特惠尝鲜价', {
-        left: 12, top: 12, originX: 'left', originY: 'top',
-        fontSize: 14, fontWeight: 'bold', fontFamily: "'Microsoft YaHei', sans-serif"
+        left: 16, top: 14, originX: 'left', originY: 'top',
+        fontSize: 15, fontWeight: 'bold', fontFamily: "'Microsoft YaHei', sans-serif"
       }));
       canvas.add(new fabric.IText('¥ 19.90', {
-        left: 12, top: 38, originX: 'left', originY: 'top',
-        fontSize: 22, fontWeight: 'bold', fontFamily: "'Microsoft YaHei', sans-serif"
+        left: 16, top: 42, originX: 'left', originY: 'top',
+        fontSize: 26, fontWeight: 'bold', fontFamily: "'Microsoft YaHei', sans-serif"
       }));
       canvas.add(new fabric.IText('原价: ¥29.90', {
-        left: 12, top: 68, originX: 'left', originY: 'top',
-        fontSize: 10, fontFamily: "'Microsoft YaHei', sans-serif"
+        left: 16, top: 84, originX: 'left', originY: 'top',
+        fontSize: 11, fontFamily: "'Microsoft YaHei', sans-serif"
       }));
 
-      // Small sample barcode on right
+      // Sample barcode on right
       const bcCanvas = document.createElement('canvas');
-      JsBarcode(bcCanvas, '199026', { format: 'CODE128', displayValue: false, height: 40, margin: 0 });
+      JsBarcode(bcCanvas, '199026', { format: 'CODE128', displayValue: false, height: 48, margin: 0 });
       fabric.Image.fromURL(bcCanvas.toDataURL(), (img) => {
-        img.set({ left: canvasW - 14, top: canvasH / 2, originX: 'right', originY: 'center', scaleX: 0.8, scaleY: 0.8 });
+        img.set({ left: canvasW - 16, top: canvasH / 2, originX: 'right', originY: 'center', scaleX: 0.9, scaleY: 0.9 });
         canvas.add(img);
         canvas.renderAll();
         pushHistory();
@@ -991,8 +1028,8 @@ document.addEventListener('DOMContentLoaded', () => {
           mac: mac,
           density: density,
           copies: copies,
-          width: isLandscape ? 216 : 96,
-          height: isLandscape ? 96 : 216
+          width: canvasW,
+          height: canvasH
         })
       });
 
