@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">得力标签工坊</string>
+    <string name="title_paper_spec">15 × 30 mm</string>
+    <string name="status_disconnected">未连接设备</string>
+    <string name="status_connected">已连接</string>
+    <string name="btn_print">立即打印</string>
+</resources>

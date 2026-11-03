@@ -14,6 +14,9 @@ deli-q1a-printer/
 │   ├── protocol.py             # 底层蓝牙 UUID、控制指令集、光栅管道构造器
 │   ├── image.py                # 1-Bit 单色点阵转换与 Floyd-Steinberg 图像算法
 │   └── driver.py               # 异步 BLE 驱动引擎 (DeliPrinter)
+├── android/                    # 📱 原生 Android 客户端工程 (Kotlin + Material 3)
+│   ├── app/src/main/           # 触摸画板、ZXing条码、BLE直连驱动、预置模版
+│   └── build.gradle.kts        # 完整 Gradle 构建体系 (compileSdk 34)
 ├── deli_print.py               # 💻 独立命令行 CLI 工具 (适合脚本自动化与终端打印)
 ├── server.py                   # 🌐 WebApp 后端服务 (FastAPI REST API)
 ├── web/                        # 🎨 WebApp 可视化画板前端 (纯浅色优雅交互设计)
@@ -69,6 +72,21 @@ python server.py
 
 服务启动后，系统会自动在默认浏览器打开：
 👉 **`http://127.0.0.1:8000`**
+
+---
+
+## 📱 原生 Android 客户端 (得力标签工坊 Android 版)
+
+本项目在 `android/` 目录下提供了 100% 独立的原生 Android Studio 工程，基于现代 Kotlin + Material 3 开发，完全脱离 PC，直接在手机上通过手机蓝牙操控打印机：
+
+* **直连硬件 BLE**：内置 Android 12+ 蓝牙权限管理与 MTU 247 自动协商，支持信号强度智能搜索与默认 MAC 一键直连。
+* **触控交互式画板**：单指拖拽排版、双指缩放、富文本调节、ZXing 条形码/二维码生成、图片导入与 Floyd-Steinberg 点阵抖动。
+* **一气呵成连续流打印**：将 1-Bit 光栅位图与 `1D 0C` 紧随其后推送到打印机，平滑出纸不顿挫。
+* **满幅 120 点阵无白边**：完美支持 15×30mm、15×40mm、12×30mm 等耗材规格。
+* **编译运行**：
+  - 用 Android Studio 打开 `android/` 目录直接点击运行即可。
+  - 或通过命令行编译：`cd android && ./gradlew assembleDebug`。
+  - 详细文档请参见：[android/README.md](android/README.md)。
 
 ---
 

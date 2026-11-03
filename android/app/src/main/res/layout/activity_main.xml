@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_app">
+
+    <!-- Top App Bar / Header -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/headerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="@color/bg_card"
+        android:elevation="2dp"
+        android:paddingHorizontal="12dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <!-- App Logo & Title -->
+        <TextView
+            android:id="@+id/tvAppTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="得力 Q1A 标签工坊"
+            android:textColor="@color/text_primary"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- BLE Status Pill -->
+        <LinearLayout
+            android:id="@+id/bleStatusContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_pill"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="5dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btnPrint"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginEnd="8dp">
+
+            <View
+                android:id="@+id/statusIndicator"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:background="@drawable/bg_dot_disconnected" />
+
+            <TextView
+                android:id="@+id/tvBleStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:text="未连接设备"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Main Print Button -->
+        <Button
+            android:id="@+id/btnPrint"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:background="@drawable/bg_btn_primary"
+            android:paddingHorizontal="16dp"
+            android:text="打印"
+            android:textColor="@color/white"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Sub-bar: Paper Specs & Canvas Tools -->
+    <LinearLayout
+        android:id="@+id/subBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:background="@color/bg_card"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="12dp"
+        app:layout_constraintTop_toBottomOf="@id/headerLayout">
+
+        <!-- Paper Spec Selector -->
+        <LinearLayout
+            android:id="@+id/specContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_pill"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="4dp">
+
+            <TextView
+                android:id="@+id/tvPaperSpec"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="15 × 30 mm (横向)"
+                android:textColor="@color/text_primary"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="▼"
+                android:textColor="@color/text_muted"
+                android:textSize="9sp" />
+        </LinearLayout>
+
+        <!-- Rotate Canvas Button -->
+        <Button
+            android:id="@+id/btnRotateCanvas"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:layout_marginStart="8dp"
+            android:minWidth="0dp"
+            android:paddingHorizontal="8dp"
+            android:text="🔄 旋转"
+            android:textColor="@color/brand_primary"
+            android:textSize="12sp" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <!-- Undo Button -->
+        <ImageButton
+            android:id="@+id/btnUndo"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:contentDescription="撤销"
+            android:enabled="false"
+            android:src="@android:drawable/ic_menu_revert" />
+
+        <!-- Redo Button -->
+        <ImageButton
+            android:id="@+id/btnRedo"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:contentDescription="重做"
+            android:enabled="false"
+            android:rotation="180"
+            android:src="@android:drawable/ic_menu_revert" />
+
+        <!-- Clear Button -->
+        <ImageButton
+            android:id="@+id/btnClear"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:contentDescription="清空"
+            android:src="@android:drawable/ic_menu_delete" />
+
+    </LinearLayout>
+
+    <!-- Center Canvas Workspace -->
+    <com.deli.printer.ui.canvas.LabelCanvasView
+        android:id="@+id/labelCanvasView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="12dp"
+        app:layout_constraintBottom_toTopOf="@id/bottomToolBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/subBarLayout" />
+
+    <!-- Bottom Toolbox Panel -->
+    <HorizontalScrollView
+        android:id="@+id/bottomToolBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_bottom_bar"
+        android:elevation="6dp"
+        android:paddingVertical="10dp"
+        android:scrollbars="none"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="12dp">
+
+            <!-- Add Text -->
+            <Button
+                android:id="@+id/btnAddText"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:background="@drawable/bg_btn_secondary"
+                android:drawableStart="@android:drawable/ic_menu_edit"
+                android:drawablePadding="6dp"
+                android:paddingHorizontal="14dp"
+                android:text="文本"
+                android:textColor="@color/text_primary"
+                android:textSize="13sp" />
+
+            <!-- Add Barcode / QR -->
+            <Button
+                android:id="@+id/btnAddBarcode"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bg_btn_secondary"
+                android:drawableStart="@android:drawable/ic_menu_sort_by_size"
+                android:drawablePadding="6dp"
+                android:paddingHorizontal="14dp"
+                android:text="条码/QR"
+                android:textColor="@color/text_primary"
+                android:textSize="13sp" />
+
+            <!-- Shapes / Borders -->
+            <Button
+                android:id="@+id/btnAddShapes"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bg_btn_secondary"
+                android:drawableStart="@android:drawable/ic_menu_crop"
+                android:drawablePadding="6dp"
+                android:paddingHorizontal="14dp"
+                android:text="边框/线条"
+                android:textColor="@color/text_primary"
+                android:textSize="13sp" />
+
+            <!-- Templates -->
+            <Button
+                android:id="@+id/btnTemplates"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bg_btn_secondary"
+                android:drawableStart="@android:drawable/ic_menu_agenda"
+                android:drawablePadding="6dp"
+                android:paddingHorizontal="14dp"
+                android:text="模版库"
+                android:textColor="@color/text_primary"
+                android:textSize="13sp" />
+
+            <!-- Add Image -->
+            <Button
+                android:id="@+id/btnAddImage"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bg_btn_secondary"
+                android:drawableStart="@android:drawable/ic_menu_gallery"
+                android:drawablePadding="6dp"
+                android:paddingHorizontal="14dp"
+                android:text="导入图片"
+                android:textColor="@color/text_primary"
+                android:textSize="13sp" />
+
+        </LinearLayout>
+    </HorizontalScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
