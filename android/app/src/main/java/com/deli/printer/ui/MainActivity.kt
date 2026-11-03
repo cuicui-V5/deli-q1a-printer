@@ -3,10 +3,14 @@ package com.deli.printer.ui
 import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.deli.printer.DeliApp
 import com.deli.printer.R
@@ -33,18 +37,21 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnUndo: ImageButton
     private lateinit var btnRedo: ImageButton
 
-    // Bottom Toolbars
+    // Bottom Panels
     private lateinit var mainToolBar: View
-    private lateinit var textConfigBar: View
-    private lateinit var btnConfigEditText: Button
-    private lateinit var btnConfigSizeMinus: Button
-    private lateinit var tvConfigSize: TextView
-    private lateinit var btnConfigSizePlus: Button
-    private lateinit var btnConfigBold: Button
-    private lateinit var btnConfigAlign: Button
-    private lateinit var btnConfigDelete: Button
-    private lateinit var btnConfigDone: Button
+    private lateinit var textInspectorPanel: View
 
+    // Text Inspector Controls
+    private lateinit var btnInspectorDone: Button
+    private lateinit var etInspectorText: EditText
+    private lateinit var sbInspectorTextSize: SeekBar
+    private lateinit var tvInspectorSizeValue: TextView
+    private lateinit var btnInspectorBold: Button
+    private lateinit var btnInspectorAlignLeft: Button
+    private lateinit var btnInspectorAlignCenter: Button
+    private lateinit var btnInspectorDelete: Button
+
+    private var isUpdatingInspector: Boolean = false
     private var currentSpec: PaperSpec = PaperSpec.SPEC_15_30
     private var isLandscape: Boolean = true
 
@@ -88,8 +95,8 @@ class MainActivity : AppCompatActivity() {
                     bleManager.connectMac(DeliProtocol.DEFAULT_MAC)
                 }
             }
-        } catch (e: Exception) {
-            // Silently ignore or log
+        } catch (_: Exception) {
+            // Silently ignore
         }
     }
 
@@ -104,15 +111,17 @@ class MainActivity : AppCompatActivity() {
 
         // Bottom Bars
         mainToolBar = findViewById(R.id.mainToolBar)
-        textConfigBar = findViewById(R.id.textConfigBar)
-        btnConfigEditText = findViewById(R.id.btnConfigEditText)
-        btnConfigSizeMinus = findViewById(R.id.btnConfigSizeMinus)
-        tvConfigSize = findViewById(R.id.tvConfigSize)
-        btnConfigSizePlus = findViewById(R.id.btnConfigSizePlus)
-        btnConfigBold = findViewById(R.id.btnConfigBold)
-        btnConfigAlign = findViewById(R.id.btnConfigAlign)
-        btnConfigDelete = findViewById(R.id.btnConfigDelete)
-        btnConfigDone = findViewById(R.id.btnConfigDone)
+        textInspectorPanel = findViewById(R.id.textInspectorPanel)
+
+        // Inspector Controls
+        btnInspectorDone = findViewById(R.id.btnInspectorDone)
+        etInspectorText = findViewById(R.id.etInspectorText)
+        sbInspectorTextSize = findViewById(R.id.sbInspectorTextSize)
+        tvInspectorSizeValue = findViewById(R.id.tvInspectorSizeValue)
+        btnInspectorBold = findViewById(R.id.btnInspectorBold)
+        btnInspectorAlignLeft = findViewById(R.id.btnInspectorAlignLeft)
+        btnInspectorAlignCenter = findViewById(R.id.btnInspectorAlignCenter)
+        btnInspectorDelete = findViewById(R.id.btnInspectorDelete)
 
         updateCanvasGeometry()
     }
@@ -125,23 +134,141 @@ class MainActivity : AppCompatActivity() {
         tvPaperSpec.text = "${currentSpec.widthMm}×${currentSpec.lengthMm} mm (${if (isLandscape) "横向" else "纵向"})"
     }
 
-    private fun updateTextConfigUi(elem: TextElement) {
-        tvConfigSize.text = "${elem.textSize.toInt()}pt"
-        btnConfigBold.text = if (elem.isBold) "B 粗体(开)" else "B 粗体"
-        btnConfigAlign.text = if (elem.isCentered) "居中" else "靠左"
+    private fun populateInspector(elem: TextElement) {
+        isUpdatingInspector = true
+
+        etInspectorText.setText(elem.text)
+        etInspectorText.setSelection(elem.text.length)
+
+        val prog = (elem.textSize.toInt() - 8).coerceIn(0, 28)
+        sbInspectorTextSize.progress = prog
+        tvInspectorSizeValue.text = "${elem.textSize.toInt()} pt"
+
+        updateInspectorStyleButtons(elem)
+
+        isUpdatingInspector = false
+    }
+
+    private fun updateInspectorStyleButtons(elem: TextElement) {
+        val white = ContextCompat.getColor(this, R.color.white)
+        val textPrimary = ContextCompat.getColor(this, R.color.text_primary)
+
+        if (elem.isBold) {
+            btnInspectorBold.setBackgroundResource(R.drawable.bg_btn_selected)
+            btnInspectorBold.setTextColor(white)
+            btnInspectorBold.compoundDrawables[0]?.setTint(white)
+        } else {
+            btnInspectorBold.setBackgroundResource(R.drawable.bg_btn_secondary)
+            btnInspectorBold.setTextColor(textPrimary)
+            btnInspectorBold.compoundDrawables[0]?.setTint(textPrimary)
+        }
+
+        if (!elem.isCentered) {
+            btnInspectorAlignLeft.setBackgroundResource(R.drawable.bg_btn_selected)
+            btnInspectorAlignLeft.setTextColor(white)
+            btnInspectorAlignLeft.compoundDrawables[0]?.setTint(white)
+
+            btnInspectorAlignCenter.setBackgroundResource(R.drawable.bg_btn_secondary)
+            btnInspectorAlignCenter.setTextColor(textPrimary)
+            btnInspectorAlignCenter.compoundDrawables[0]?.setTint(textPrimary)
+        } else {
+            btnInspectorAlignCenter.setBackgroundResource(R.drawable.bg_btn_selected)
+            btnInspectorAlignCenter.setTextColor(white)
+            btnInspectorAlignCenter.compoundDrawables[0]?.setTint(white)
+
+            btnInspectorAlignLeft.setBackgroundResource(R.drawable.bg_btn_secondary)
+            btnInspectorAlignLeft.setTextColor(textPrimary)
+            btnInspectorAlignLeft.compoundDrawables[0]?.setTint(textPrimary)
+        }
     }
 
     private fun setupListeners() {
-        // Selection change listener: dynamically switch between main tools and text config
+        // Selection change listener: dynamically switch between main tools and text inspector
         canvasView.onSelectionChanged = { selected ->
             if (selected is TextElement) {
                 mainToolBar.visibility = View.GONE
-                textConfigBar.visibility = View.VISIBLE
-                updateTextConfigUi(selected)
+                textInspectorPanel.visibility = View.VISIBLE
+                populateInspector(selected)
             } else {
-                textConfigBar.visibility = View.GONE
+                hideSoftKeyboard()
+                textInspectorPanel.visibility = View.GONE
                 mainToolBar.visibility = View.VISIBLE
             }
+        }
+
+        // Real-time canvas handle drag scaling
+        canvasView.onElementSizeChanged = { newSize ->
+            isUpdatingInspector = true
+            val prog = (newSize.toInt() - 8).coerceIn(0, 28)
+            sbInspectorTextSize.progress = prog
+            tvInspectorSizeValue.text = "${newSize.toInt()} pt"
+            isUpdatingInspector = false
+        }
+
+        // Direct Text Input Live Editing
+        etInspectorText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (isUpdatingInspector) return
+                val sel = canvasView.getSelectedElement() as? TextElement ?: return
+                sel.text = s?.toString() ?: ""
+                canvasView.invalidate()
+            }
+            override fun afterTextChanged(s: Editable?) {}
+        })
+
+        // Font Size Slider
+        sbInspectorTextSize.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (!fromUser || isUpdatingInspector) return
+                val sel = canvasView.getSelectedElement() as? TextElement ?: return
+                val newSize = (progress + 8).toFloat()
+                sel.textSize = newSize
+                tvInspectorSizeValue.text = "${newSize.toInt()} pt"
+                canvasView.invalidate()
+            }
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                canvasView.notifyElementModified()
+            }
+        })
+
+        // Bold Toggle
+        btnInspectorBold.setOnClickListener {
+            val sel = canvasView.getSelectedElement() as? TextElement ?: return@setOnClickListener
+            sel.isBold = !sel.isBold
+            updateInspectorStyleButtons(sel)
+            canvasView.notifyElementModified()
+        }
+
+        // Align Left
+        btnInspectorAlignLeft.setOnClickListener {
+            val sel = canvasView.getSelectedElement() as? TextElement ?: return@setOnClickListener
+            sel.isCentered = false
+            sel.x = 10f
+            updateInspectorStyleButtons(sel)
+            canvasView.notifyElementModified()
+        }
+
+        // Align Center
+        btnInspectorAlignCenter.setOnClickListener {
+            val sel = canvasView.getSelectedElement() as? TextElement ?: return@setOnClickListener
+            sel.isCentered = true
+            sel.x = canvasView.canvasDotWidth / 2f
+            updateInspectorStyleButtons(sel)
+            canvasView.notifyElementModified()
+        }
+
+        // Delete Button
+        btnInspectorDelete.setOnClickListener {
+            hideSoftKeyboard()
+            canvasView.removeSelected()
+        }
+
+        // Done Button
+        btnInspectorDone.setOnClickListener {
+            hideSoftKeyboard()
+            canvasView.deselectAll()
         }
 
         // Spec Dialog
@@ -188,13 +315,20 @@ class MainActivity : AppCompatActivity() {
                 .show()
         }
 
-        // Add Text
+        // Add Text: Directly add and auto-select to open inspector
         findViewById<View>(R.id.btnAddText).setOnClickListener {
-            TextEditDialog().apply {
-                onConfirm = { textElem ->
-                    canvasView.addElement(textElem)
-                }
-            }.show(supportFragmentManager, "TextEditDialog")
+            val w = canvasView.canvasDotWidth.toFloat()
+            val h = canvasView.canvasDotHeight.toFloat()
+            val newElem = TextElement(
+                x = w / 2f,
+                y = (h - 22f) / 2f,
+                text = "新建文本",
+                textSize = 22f,
+                isBold = true,
+                isCentered = true
+            )
+            canvasView.addElement(newElem)
+            etInspectorText.requestFocus()
         }
 
         // Add Barcode / QR Code
@@ -209,65 +343,6 @@ class MainActivity : AppCompatActivity() {
         // Templates Menu
         findViewById<View>(R.id.btnTemplates).setOnClickListener {
             showTemplatesMenu()
-        }
-
-        // --- Text Configuration Bar Listeners ---
-        btnConfigEditText.setOnClickListener {
-            val sel = canvasView.getSelectedElement() as? TextElement ?: return@setOnClickListener
-            TextEditDialog().apply {
-                textElement = sel
-                onConfirm = { updated ->
-                    sel.text = updated.text
-                    sel.textSize = updated.textSize
-                    sel.isBold = updated.isBold
-                    sel.isCentered = updated.isCentered
-                    canvasView.notifyElementModified()
-                    updateTextConfigUi(sel)
-                }
-            }.show(supportFragmentManager, "TextEditDialog")
-        }
-
-        btnConfigSizeMinus.setOnClickListener {
-            val sel = canvasView.getSelectedElement() as? TextElement ?: return@setOnClickListener
-            val newSize = (sel.textSize - 2f).coerceAtLeast(8f)
-            sel.textSize = newSize
-            updateTextConfigUi(sel)
-            canvasView.notifyElementModified()
-        }
-
-        btnConfigSizePlus.setOnClickListener {
-            val sel = canvasView.getSelectedElement() as? TextElement ?: return@setOnClickListener
-            val newSize = (sel.textSize + 2f).coerceAtMost(36f)
-            sel.textSize = newSize
-            updateTextConfigUi(sel)
-            canvasView.notifyElementModified()
-        }
-
-        btnConfigBold.setOnClickListener {
-            val sel = canvasView.getSelectedElement() as? TextElement ?: return@setOnClickListener
-            sel.isBold = !sel.isBold
-            updateTextConfigUi(sel)
-            canvasView.notifyElementModified()
-        }
-
-        btnConfigAlign.setOnClickListener {
-            val sel = canvasView.getSelectedElement() as? TextElement ?: return@setOnClickListener
-            sel.isCentered = !sel.isCentered
-            if (sel.isCentered) {
-                sel.x = canvasView.canvasDotWidth / 2f
-            } else {
-                sel.x = 10f
-            }
-            updateTextConfigUi(sel)
-            canvasView.notifyElementModified()
-        }
-
-        btnConfigDelete.setOnClickListener {
-            canvasView.removeSelected()
-        }
-
-        btnConfigDone.setOnClickListener {
-            canvasView.deselectAll()
         }
 
         // Execute Print
@@ -285,6 +360,11 @@ class MainActivity : AppCompatActivity() {
                 isLandscape = this@MainActivity.isLandscape
             }.show(supportFragmentManager, "PrintDialog")
         }
+    }
+
+    private fun hideSoftKeyboard() {
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+        imm?.hideSoftInputFromWindow(etInspectorText.windowToken, 0)
     }
 
     private fun showTemplatesMenu() {

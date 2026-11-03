@@ -12,8 +12,8 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:background="@color/bg_card"
-        android:elevation="2dp"
-        android:paddingHorizontal="12dp"
+        android:elevation="3dp"
+        android:paddingHorizontal="14dp"
         app:layout_constraintTop_toTopOf="parent">
 
         <!-- App Logo & Title -->
@@ -69,7 +69,10 @@
             android:layout_width="wrap_content"
             android:layout_height="36dp"
             android:background="@drawable/bg_btn_primary"
-            android:paddingHorizontal="16dp"
+            android:drawableStart="@drawable/ic_print"
+            android:drawableTint="@color/white"
+            android:drawablePadding="6dp"
+            android:paddingHorizontal="14dp"
             android:text="打印"
             android:textColor="@color/white"
             android:textSize="13sp"
@@ -88,7 +91,7 @@
         android:background="@color/bg_card"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingHorizontal="12dp"
+        android:paddingHorizontal="14dp"
         app:layout_constraintTop_toBottomOf="@id/headerLayout">
 
         <!-- Paper Spec Selector -->
@@ -133,7 +136,8 @@
             android:paddingHorizontal="8dp"
             android:text="🔄 旋转"
             android:textColor="@color/brand_primary"
-            android:textSize="12sp" />
+            android:textSize="12sp"
+            android:textStyle="bold" />
 
         <View
             android:layout_width="0dp"
@@ -183,20 +187,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/subBarLayout" />
 
-    <!-- Bottom Toolbox Container: Main Tools or Selected Element Config -->
+    <!-- Bottom Container: Pinned at bottom of screen -->
     <FrameLayout
         android:id="@+id/bottomContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_bottom_bar"
-        android:elevation="8dp"
+        android:background="@drawable/bg_bottom_sheet_card"
+        android:elevation="12dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <!-- 1. Normal State: Main ToolBar -->
+        <!-- 1. Normal State: Main ToolBar (Idle / No selection) -->
         <LinearLayout
             android:id="@+id/mainToolBar"
             android:layout_width="match_parent"
-            android:layout_height="58dp"
+            android:layout_height="64dp"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:paddingHorizontal="16dp"
@@ -206,10 +210,14 @@
             <Button
                 android:id="@+id/btnAddText"
                 android:layout_width="0dp"
-                android:layout_height="42dp"
+                android:layout_height="44dp"
                 android:layout_weight="1.2"
                 android:background="@drawable/bg_btn_primary"
-                android:text="＋ 添加文本"
+                android:drawableStart="@drawable/ic_add"
+                android:drawableTint="@color/white"
+                android:drawablePadding="6dp"
+                android:paddingHorizontal="14dp"
+                android:text="添加文本"
                 android:textColor="@color/white"
                 android:textSize="14sp"
                 android:textStyle="bold" />
@@ -218,11 +226,15 @@
             <Button
                 android:id="@+id/btnTemplates"
                 android:layout_width="0dp"
-                android:layout_height="42dp"
+                android:layout_height="44dp"
                 android:layout_marginStart="10dp"
                 android:layout_weight="1"
                 android:background="@drawable/bg_btn_secondary"
-                android:text="📋 模版库"
+                android:drawableStart="@drawable/ic_templates"
+                android:drawableTint="@color/text_primary"
+                android:drawablePadding="6dp"
+                android:paddingHorizontal="12dp"
+                android:text="模版库"
                 android:textColor="@color/text_primary"
                 android:textSize="14sp"
                 android:textStyle="bold" />
@@ -231,138 +243,202 @@
             <Button
                 android:id="@+id/btnAddBarcode"
                 android:layout_width="wrap_content"
-                android:layout_height="42dp"
+                android:layout_height="44dp"
                 android:layout_marginStart="10dp"
                 android:background="@drawable/bg_btn_secondary"
-                android:paddingHorizontal="12dp"
+                android:drawableStart="@drawable/ic_qr_code"
+                android:drawableTint="@color/text_primary"
+                android:drawablePadding="6dp"
+                android:paddingHorizontal="14dp"
                 android:text="条码/QR"
                 android:textColor="@color/text_primary"
                 android:textSize="13sp" />
 
         </LinearLayout>
 
-        <!-- 2. Text Selected State: Text Config Bar -->
-        <HorizontalScrollView
-            android:id="@+id/textConfigBar"
+        <!-- 2. Text Selected State: Half-Screen Bottom Property Sheet -->
+        <LinearLayout
+            android:id="@+id/textInspectorPanel"
             android:layout_width="match_parent"
-            android:layout_height="58dp"
-            android:scrollbars="none"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="12dp"
+            android:paddingBottom="24dp"
             android:visibility="gone">
 
+            <!-- Header Row -->
             <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingHorizontal="12dp">
+                android:orientation="horizontal">
 
-                <!-- Edit Text Button -->
-                <Button
-                    android:id="@+id/btnConfigEditText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="38dp"
-                    android:background="@drawable/bg_btn_secondary"
-                    android:paddingHorizontal="12dp"
-                    android:text="✎ 改字"
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="文本属性设置"
                     android:textColor="@color/text_primary"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <!-- Done Button -->
+                <Button
+                    android:id="@+id/btnInspectorDone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="34dp"
+                    android:background="@drawable/bg_btn_primary"
+                    android:drawableStart="@drawable/ic_check"
+                    android:drawableTint="@color/white"
+                    android:drawablePadding="4dp"
+                    android:minWidth="0dp"
+                    android:paddingHorizontal="12dp"
+                    android:text="完成"
+                    android:textColor="@color/white"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- Direct Text Input (Instant real-time typing) -->
+            <EditText
+                android:id="@+id/etInspectorText"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_input_field"
+                android:hint="在此直接编辑文本内容..."
+                android:imeOptions="actionDone"
+                android:inputType="text"
+                android:paddingHorizontal="14dp"
+                android:textColor="@color/text_primary"
+                android:textSize="15sp" />
+
+            <!-- Font Size Slider Row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="字号"
+                    android:textColor="@color/text_secondary"
                     android:textSize="13sp"
                     android:textStyle="bold" />
 
-                <!-- Font Size Stepper -->
-                <LinearLayout
+                <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="38dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
+                    android:text="A"
+                    android:textColor="@color/text_muted"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <SeekBar
+                    android:id="@+id/sbInspectorTextSize"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:max="28"
+                    android:progress="14" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="6dp"
+                    android:text="A"
+                    android:textColor="@color/text_primary"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvInspectorSizeValue"
+                    android:layout_width="48dp"
+                    android:layout_height="26dp"
                     android:background="@drawable/bg_pill"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingHorizontal="4dp">
+                    android:gravity="center"
+                    android:text="22 pt"
+                    android:textColor="@color/brand_primary"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
 
-                    <Button
-                        android:id="@+id/btnConfigSizeMinus"
-                        style="?android:attr/borderlessButtonStyle"
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:minWidth="0dp"
-                        android:text="－"
-                        android:textColor="@color/text_primary"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tvConfigSize"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="4dp"
-                        android:text="22pt"
-                        android:textColor="@color/brand_primary"
-                        android:textSize="13sp"
-                        android:textStyle="bold" />
-
-                    <Button
-                        android:id="@+id/btnConfigSizePlus"
-                        style="?android:attr/borderlessButtonStyle"
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:minWidth="0dp"
-                        android:text="＋"
-                        android:textColor="@color/text_primary"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
+            <!-- Styles & Alignment -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="12dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
                 <!-- Bold Toggle -->
                 <Button
-                    android:id="@+id/btnConfigBold"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/btnInspectorBold"
+                    android:layout_width="0dp"
                     android:layout_height="38dp"
-                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
                     android:background="@drawable/bg_btn_secondary"
-                    android:paddingHorizontal="10dp"
-                    android:text="B 粗体"
+                    android:drawableStart="@drawable/ic_format_bold"
+                    android:drawablePadding="4dp"
+                    android:gravity="center"
+                    android:text="粗体"
                     android:textColor="@color/text_primary"
                     android:textSize="13sp"
                     android:textStyle="bold" />
 
-                <!-- Align Toggle -->
+                <!-- Align Left -->
                 <Button
-                    android:id="@+id/btnConfigAlign"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/btnInspectorAlignLeft"
+                    android:layout_width="0dp"
                     android:layout_height="38dp"
                     android:layout_marginStart="8dp"
+                    android:layout_weight="1"
                     android:background="@drawable/bg_btn_secondary"
-                    android:paddingHorizontal="10dp"
+                    android:drawableStart="@drawable/ic_format_align_left"
+                    android:drawablePadding="4dp"
+                    android:gravity="center"
+                    android:text="靠左"
+                    android:textColor="@color/text_primary"
+                    android:textSize="13sp" />
+
+                <!-- Align Center -->
+                <Button
+                    android:id="@+id/btnInspectorAlignCenter"
+                    android:layout_width="0dp"
+                    android:layout_height="38dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_btn_secondary"
+                    android:drawableStart="@drawable/ic_format_align_center"
+                    android:drawablePadding="4dp"
+                    android:gravity="center"
                     android:text="居中"
                     android:textColor="@color/text_primary"
                     android:textSize="13sp" />
 
-                <!-- Delete Element -->
+                <!-- Delete Button -->
                 <Button
-                    android:id="@+id/btnConfigDelete"
+                    android:id="@+id/btnInspectorDelete"
                     android:layout_width="wrap_content"
                     android:layout_height="38dp"
                     android:layout_marginStart="8dp"
-                    android:background="@drawable/bg_btn_secondary"
+                    android:background="@drawable/bg_btn_danger_subtle"
+                    android:drawableStart="@drawable/ic_delete"
+                    android:drawablePadding="4dp"
                     android:paddingHorizontal="10dp"
-                    android:text="🗑 删除"
+                    android:text="删除"
                     android:textColor="@color/status_red"
-                    android:textSize="13sp" />
-
-                <!-- Done / Deselect -->
-                <Button
-                    android:id="@+id/btnConfigDone"
-                    android:layout_width="wrap_content"
-                    android:layout_height="38dp"
-                    android:layout_marginStart="10dp"
-                    android:background="@drawable/bg_btn_primary"
-                    android:paddingHorizontal="14dp"
-                    android:text="✓ 完成"
-                    android:textColor="@color/white"
                     android:textSize="13sp"
                     android:textStyle="bold" />
 
             </LinearLayout>
-        </HorizontalScrollView>
+
+        </LinearLayout>
 
     </FrameLayout>
 

@@ -1,32 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:fillViewport="true"
-    android:background="@color/bg_card">
+    android:background="@drawable/bg_bottom_sheet_card"
+    android:orientation="vertical">
+
+    <!-- Drag Handle -->
+    <View
+        android:layout_width="36dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="6dp"
+        android:background="@drawable/bg_pill"
+        android:backgroundTint="@color/border_color" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="4dp"
+        android:text="生成条形码 / 二维码"
+        android:textColor="@color/text_primary"
+        android:textSize="18sp"
+        android:textStyle="bold" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingHorizontal="20dp"
-        android:paddingTop="16dp"
-        android:paddingBottom="40dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="生成条形码 / 二维码"
-            android:textColor="@color/text_primary"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+        android:paddingTop="10dp"
+        android:paddingBottom="6dp">
 
         <RadioGroup
             android:id="@+id/rgBarcodeType"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
             android:checkedButton="@+id/rbTypeCode128"
             android:orientation="horizontal">
 
@@ -35,37 +46,54 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Code-128 一维条码" />
+                android:textSize="14sp"
+                android:text="Code-128 一维码" />
 
             <RadioButton
                 android:id="@+id/rbTypeQr"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:textSize="14sp"
                 android:text="QR Code 二维码" />
         </RadioGroup>
 
         <EditText
             android:id="@+id/etBarcodeContent"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="46dp"
             android:layout_marginTop="12dp"
-            android:background="@drawable/bg_pill"
+            android:background="@drawable/bg_input_field"
             android:hint="输入编码内容 (如 690123456789)"
-            android:padding="12dp"
+            android:paddingHorizontal="14dp"
             android:textColor="@color/text_primary"
             android:textSize="15sp" />
+
+    </LinearLayout>
+
+    <!-- PINNED Bottom Action Bar -->
+    <LinearLayout
+        android:id="@+id/dialogBottomBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="24dp"
+        android:background="@color/bg_card">
 
         <Button
             android:id="@+id/btnGenerateBarcode"
             android:layout_width="match_parent"
-            android:layout_height="46dp"
-            android:layout_marginTop="16dp"
+            android:layout_height="48dp"
             android:background="@drawable/bg_btn_primary"
+            android:drawableStart="@drawable/ic_qr_code"
+            android:drawableTint="@color/white"
+            android:drawablePadding="8dp"
             android:text="生成并插入画板"
             android:textColor="@color/white"
             android:textSize="15sp"
             android:textStyle="bold" />
-
     </LinearLayout>
-</androidx.core.widget.NestedScrollView>
+
+</LinearLayout>

@@ -6,6 +6,7 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import com.deli.printer.model.*
+import kotlin.math.hypot
 import kotlin.math.max
 import kotlin.math.min
 
@@ -15,10 +16,10 @@ class LabelCanvasView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
-    // Canvas coordinate space in dots (e.g. 240x120 for 15x30 landscape)
+    // Canvas coordinate space in dots (e.g. 240x96 for 15x30 landscape)
     var canvasDotWidth: Int = 240
         private set
-    var canvasDotHeight: Int = 120
+    var canvasDotHeight: Int = 96
         private set
 
     // Physical display scale factor
@@ -34,6 +35,12 @@ class LabelCanvasView @JvmOverloads constructor(
     private var lastTouchY: Float = 0f
     private var isDragging: Boolean = false
 
+    // Resize Handle Tracking
+    private var isResizing: Boolean = false
+    private var resizeStartTouchX: Float = 0f
+    private var resizeStartTouchY: Float = 0f
+    private var resizeStartSize: Float = 14f
+
     // Undo / Redo History
     private val history = mutableListOf<List<CanvasElement>>()
     private var historyIndex = -1
@@ -47,31 +54,44 @@ class LabelCanvasView @JvmOverloads constructor(
         style = Paint.Style.STROKE
     }
     private val selectPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#3B82F6") // Brand blue
+        color = Color.parseColor("#2563EB") // Brand blue
+        style = Paint.Style.STROKE
+        strokeWidth = 3f
+    }
+    private val handleBgPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.WHITE
+        style = Paint.Style.FILL
+    }
+    private val handleBorderPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#CBD5E1")
         style = Paint.Style.STROKE
         strokeWidth = 2f
-        pathEffect = DashPathEffect(floatArrayOf(10f, 10f), 0f)
     }
     private val deleteBtnPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.parseColor("#EF4444") // Red
         style = Paint.Style.FILL
     }
-    private val deleteTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+    private val resizeBtnPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#2563EB") // Blue
+        style = Paint.Style.FILL
+    }
+    private val iconWhitePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.WHITE
-        textSize = 24f
-        textAlign = Paint.Align.CENTER
-        typeface = Typeface.DEFAULT_BOLD
+        strokeWidth = 2.5f
+        style = Paint.Style.STROKE
+        strokeCap = Paint.Cap.ROUND
     }
 
     var onSelectionChanged: ((CanvasElement?) -> Unit)? = null
     var onHistoryChanged: ((canUndo: Boolean, canRedo: Boolean) -> Unit)? = null
+    var onElementSizeChanged: ((Float) -> Unit)? = null
+    var onElementModified: (() -> Unit)? = null
 
     init {
         try {
             val tf = Typeface.createFromAsset(context.assets, "fonts/NotoSansSC.ttf")
             textPaint.typeface = tf
         } catch (_: Exception) {
-            // Fallback to system default if asset is missing
             textPaint.typeface = Typeface.DEFAULT
         }
         saveStateToHistory()
@@ -173,40 +193,47 @@ class LabelCanvasView @JvmOverloads constructor(
     }
 
     private fun calculateScale() {
-        if (width <= 0 || height <= 0 || canvasDotWidth <= 0 || canvasDotHeight <= 0) return
-        val padding = 40f
-        val availW = width - padding * 2
-        val availH = height - padding * 2
+        val availableW = width.toFloat() - paddingLeft - paddingRight - 32f
+        val availableH = height.toFloat() - paddingTop - paddingBottom - 32f
 
-        displayScale = min(availW / canvasDotWidth, availH / canvasDotHeight).coerceAtLeast(1.0f)
-        offsetX = (width - canvasDotWidth * displayScale) / 2f
-        offsetY = (height - canvasDotHeight * displayScale) / 2f
+        if (availableW <= 0f || availableH <= 0f) return
+
+        val scaleX = availableW / canvasDotWidth.toFloat()
+        val scaleY = availableH / canvasDotHeight.toFloat()
+        displayScale = min(scaleX, scaleY)
+
+        val renderedW = canvasDotWidth * displayScale
+        val renderedH = canvasDotHeight * displayScale
+
+        offsetX = paddingLeft + (width - paddingLeft - paddingRight - renderedW) / 2f
+        offsetY = paddingTop + (height - paddingTop - paddingBottom - renderedH) / 2f
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        // Draw Canvas Background & Die-Cut Drop Shadow
         val canvasRect = RectF(
-            offsetX, offsetY,
+            offsetX,
+            offsetY,
             offsetX + canvasDotWidth * displayScale,
             offsetY + canvasDotHeight * displayScale
         )
 
-        // Shadow / Outer outline
-        val shadowPaint = Paint().apply {
-            color = Color.parseColor("#E2E8F0")
-            style = Paint.Style.STROKE
-            strokeWidth = 3f
-        }
-        canvas.drawRoundRect(canvasRect, 16f, 16f, shadowPaint)
-
-        // White paper background
-        val bgPaint = Paint().apply {
+        // Draw outer canvas drop shadow & white paper background
+        val bgPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = Color.WHITE
             style = Paint.Style.FILL
+            setShadowLayer(12f, 0f, 4f, Color.parseColor("#20000000"))
         }
-        canvas.drawRoundRect(canvasRect, 16f, 16f, bgPaint)
+        canvas.drawRoundRect(canvasRect, 12f, 12f, bgPaint)
+
+        // Draw paper border
+        val borderPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.parseColor("#E2E8F0")
+            style = Paint.Style.STROKE
+            strokeWidth = 1.5f
+        }
+        canvas.drawRoundRect(canvasRect, 12f, 12f, borderPaint)
 
         // Apply scale & translation to draw internal elements in true dot coordinates
         canvas.save()
@@ -223,7 +250,7 @@ class LabelCanvasView @JvmOverloads constructor(
 
         canvas.restore()
 
-        // Render Selection Handle & Delete Button in view coordinate space
+        // Render Selection Box & Handles in view coordinate space
         selectedElement?.let { sel ->
             val bounds = getElementBounds(sel)
             val left = offsetX + bounds.left * displayScale - 6f
@@ -231,11 +258,33 @@ class LabelCanvasView @JvmOverloads constructor(
             val right = offsetX + bounds.right * displayScale + 6f
             val bottom = offsetY + bounds.bottom * displayScale + 6f
 
-            canvas.drawRect(left, top, right, bottom, selectPaint)
+            // Bounding box
+            canvas.drawRoundRect(RectF(left, top, right, bottom), 6f, 6f, selectPaint)
 
-            // Delete circle button on top-right corner
-            canvas.drawCircle(right, top, 18f, deleteBtnPaint)
-            canvas.drawText("×", right, top + 8f, deleteTextPaint)
+            // 1. Top-Right Delete Handle (Enlarged, easy to tap)
+            val delX = right + 2f
+            val delY = top - 2f
+            canvas.drawCircle(delX, delY, 19f, handleBgPaint)
+            canvas.drawCircle(delX, delY, 19f, handleBorderPaint)
+            canvas.drawCircle(delX, delY, 15f, deleteBtnPaint)
+            // Draw clean '×' icon
+            canvas.drawLine(delX - 5f, delY - 5f, delX + 5f, delY + 5f, iconWhitePaint)
+            canvas.drawLine(delX + 5f, delY - 5f, delX - 5f, delY + 5f, iconWhitePaint)
+
+            // 2. Bottom-Right Resize Handle (Drag to resize)
+            if (sel is TextElement) {
+                val resX = right + 2f
+                val resY = bottom + 2f
+                canvas.drawCircle(resX, resY, 19f, handleBgPaint)
+                canvas.drawCircle(resX, resY, 19f, handleBorderPaint)
+                canvas.drawCircle(resX, resY, 15f, resizeBtnPaint)
+                // Draw diagonal double-headed arrow
+                canvas.drawLine(resX - 6f, resY - 6f, resX + 6f, resY + 6f, iconWhitePaint)
+                canvas.drawLine(resX + 6f, resY + 2f, resX + 6f, resY + 6f, iconWhitePaint)
+                canvas.drawLine(resX + 2f, resY + 6f, resX + 6f, resY + 6f, iconWhitePaint)
+                canvas.drawLine(resX - 6f, resY - 2f, resX - 6f, resY - 6f, iconWhitePaint)
+                canvas.drawLine(resX - 2f, resY - 6f, resX - 6f, resY - 6f, iconWhitePaint)
+            }
         }
     }
 
@@ -303,19 +352,31 @@ class LabelCanvasView @JvmOverloads constructor(
                 lastTouchX = x
                 lastTouchY = y
 
-                // Check if Delete Button was tapped
+                // 1. Check Delete Button tapped (Top-right handle)
                 selectedElement?.let { sel ->
                     val b = getElementBounds(sel)
-                    val btnX = offsetX + b.right * displayScale + 6f
-                    val btnY = offsetY + b.top * displayScale - 6f
-                    val dist = Math.hypot((x - btnX).toDouble(), (y - btnY).toDouble())
-                    if (dist <= 36) {
+                    val delX = offsetX + b.right * displayScale + 2f
+                    val delY = offsetY + b.top * displayScale - 2f
+                    if (hypot((x - delX).toDouble(), (y - delY).toDouble()) <= 42.0) {
                         removeSelected()
                         return true
                     }
+
+                    // 2. Check Resize Button tapped (Bottom-right handle)
+                    if (sel is TextElement) {
+                        val resX = offsetX + b.right * displayScale + 2f
+                        val resY = offsetY + b.bottom * displayScale + 2f
+                        if (hypot((x - resX).toDouble(), (y - resY).toDouble()) <= 42.0) {
+                            isResizing = true
+                            resizeStartTouchX = x
+                            resizeStartTouchY = y
+                            resizeStartSize = sel.textSize
+                            return true
+                        }
+                    }
                 }
 
-                // Check element selection
+                // 3. Check element selection & drag start
                 val dotX = (x - offsetX) / displayScale
                 val dotY = (y - offsetY) / displayScale
 
@@ -323,6 +384,7 @@ class LabelCanvasView @JvmOverloads constructor(
                     val b = getElementBounds(elem)
                     RectF(b.left - 8f, b.top - 8f, b.right + 8f, b.bottom + 8f).contains(dotX, dotY)
                 }
+
                 if (clicked != null) {
                     elements.forEach { it.isSelected = false }
                     clicked.isSelected = true
@@ -338,6 +400,16 @@ class LabelCanvasView @JvmOverloads constructor(
                 }
             }
             MotionEvent.ACTION_MOVE -> {
+                if (isResizing && selectedElement is TextElement) {
+                    val sel = selectedElement as TextElement
+                    val delta = ((x - resizeStartTouchX) + (y - resizeStartTouchY)) / (2f * displayScale)
+                    val newSize = (resizeStartSize + delta * 0.35f).coerceIn(8f, 36f)
+                    sel.textSize = newSize
+                    onElementSizeChanged?.invoke(newSize)
+                    invalidate()
+                    return true
+                }
+
                 if (isDragging && selectedElement != null) {
                     val dx = (x - lastTouchX) / displayScale
                     val dy = (y - lastTouchY) / displayScale
@@ -352,9 +424,15 @@ class LabelCanvasView @JvmOverloads constructor(
                 }
             }
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                if (isResizing) {
+                    isResizing = false
+                    notifyElementModified()
+                    onElementModified?.invoke()
+                }
                 if (isDragging) {
                     isDragging = false
-                    saveStateToHistory()
+                    notifyElementModified()
+                    onElementModified?.invoke()
                 }
             }
         }
