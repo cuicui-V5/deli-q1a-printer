@@ -1,0 +1,26 @@
+# Large binaries and unpacked Android artifacts
+*.apk
+*.so
+*.dex
+*.bin
+*.tar.gz
+*.zip
+
+# Research logs & archives
+archive_wewin_research/
+*.txt
+!requirements.txt
+*.log
+
+# Python cache & virtual environment
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.env
+
+# Editor & OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
