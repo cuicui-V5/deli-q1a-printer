@@ -347,13 +347,15 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.getElementById('btnAddOuterBorder').addEventListener('click', () => {
-    const marginX = isLandscape ? 10 : 8;
-    const marginY = isLandscape ? 8 : 10;
+    // Calibrated safe printable area for 15x30mm thermal label (accounting for die-cut corner & bottom head offset)
+    const marginX = isLandscape ? 14 : 14;
+    const marginTop = isLandscape ? 14 : 14;
+    const marginBottom = isLandscape ? 16 : 16;
     const border = new fabric.Rect({
       left: marginX,
-      top: marginY,
+      top: marginTop,
       width: canvasW - marginX * 2,
-      height: canvasH - marginY * 2,
+      height: canvasH - (marginTop + marginBottom),
       rx: 8,
       ry: 8,
       fill: 'transparent',
@@ -449,26 +451,26 @@ document.addEventListener('DOMContentLoaded', () => {
       canvas.clear();
       canvas.backgroundColor = '#ffffff';
 
-      // Outer Border (safe margin matching rounded die-cut sticker)
+      // Outer Border (calibrated safe printable margin: 14px L/R/Top, 16px Bottom)
       canvas.add(new fabric.Rect({
-        left: 10, top: 8, width: canvasW - 20, height: canvasH - 16,
+        left: 14, top: 14, width: canvasW - 28, height: canvasH - 30,
         rx: 8, ry: 8, fill: 'transparent', stroke: '#000', strokeWidth: 2
       }));
       // Title
       canvas.add(new fabric.IText('居家整理收纳', {
-        left: canvasW / 2, top: 14, originX: 'center', originY: 'top',
-        fontSize: 17, fontWeight: 'bold', fontFamily: "'Microsoft YaHei', sans-serif"
+        left: canvasW / 2, top: 18, originX: 'center', originY: 'top',
+        fontSize: 16, fontWeight: 'bold', fontFamily: "'Microsoft YaHei', sans-serif"
       }));
       // Divider
-      canvas.add(new fabric.Line([16, 42, canvasW - 16, 42], { stroke: '#000', strokeWidth: 1.5 }));
+      canvas.add(new fabric.Line([20, 42, canvasW - 20, 42], { stroke: '#000', strokeWidth: 1.5 }));
       // Subtitle
       canvas.add(new fabric.IText('物品: 数据线 / 扩展坞', {
-        left: canvasW / 2, top: 54, originX: 'center', originY: 'top',
-        fontSize: 13, fontFamily: "'Microsoft YaHei', sans-serif"
+        left: canvasW / 2, top: 52, originX: 'center', originY: 'top',
+        fontSize: 12, fontFamily: "'Microsoft YaHei', sans-serif"
       }));
       // Subtext
       canvas.add(new fabric.IText('2026-11-03 整理于书房', {
-        left: canvasW / 2, top: 84, originX: 'center', originY: 'top',
+        left: canvasW / 2, top: 76, originX: 'center', originY: 'top',
         fontSize: 11, fontFamily: "'Microsoft YaHei', sans-serif"
       }));
       canvas.renderAll();
@@ -480,21 +482,21 @@ document.addEventListener('DOMContentLoaded', () => {
       canvas.backgroundColor = '#ffffff';
 
       canvas.add(new fabric.Rect({
-        left: 10, top: 8, width: canvasW - 20, height: canvasH - 16,
+        left: 14, top: 14, width: canvasW - 28, height: canvasH - 30,
         rx: 8, ry: 8, fill: 'transparent', stroke: '#000', strokeWidth: 2
       }));
       canvas.add(new fabric.IText('🔌 Type-C 快充线', {
-        left: 16, top: 14, originX: 'left', originY: 'top',
-        fontSize: 16, fontWeight: 'bold', fontFamily: "'Microsoft YaHei', sans-serif"
+        left: 20, top: 18, originX: 'left', originY: 'top',
+        fontSize: 15, fontWeight: 'bold', fontFamily: "'Microsoft YaHei', sans-serif"
       }));
-      canvas.add(new fabric.Line([16, 42, canvasW - 16, 42], { stroke: '#000', strokeWidth: 1.5 }));
+      canvas.add(new fabric.Line([20, 42, canvasW - 20, 42], { stroke: '#000', strokeWidth: 1.5 }));
       canvas.add(new fabric.IText('规格: 100W PD 快充', {
-        left: 16, top: 54, originX: 'left', originY: 'top',
-        fontSize: 13, fontFamily: "'Microsoft YaHei', sans-serif"
+        left: 20, top: 52, originX: 'left', originY: 'top',
+        fontSize: 12, fontFamily: "'Microsoft YaHei', sans-serif"
       }));
       canvas.add(new fabric.IText('位置: 桌面主显示器', {
-        left: 16, top: 84, originX: 'left', originY: 'top',
-        fontSize: 12, fontFamily: "'Microsoft YaHei', sans-serif"
+        left: 20, top: 76, originX: 'left', originY: 'top',
+        fontSize: 11, fontFamily: "'Microsoft YaHei', sans-serif"
       }));
       canvas.renderAll();
       pushHistory();
@@ -505,21 +507,21 @@ document.addEventListener('DOMContentLoaded', () => {
       canvas.backgroundColor = '#ffffff';
 
       canvas.add(new fabric.Rect({
-        left: 10, top: 8, width: canvasW - 20, height: canvasH - 16,
+        left: 14, top: 14, width: canvasW - 28, height: canvasH - 30,
         rx: 8, ry: 8, fill: 'transparent', stroke: '#000', strokeWidth: 2
       }));
       canvas.add(new fabric.IText('🍎 食品赏味保鲜标', {
-        left: canvasW / 2, top: 14, originX: 'center', originY: 'top',
-        fontSize: 16, fontWeight: 'bold', fontFamily: "'Microsoft YaHei', sans-serif"
+        left: canvasW / 2, top: 18, originX: 'center', originY: 'top',
+        fontSize: 15, fontWeight: 'bold', fontFamily: "'Microsoft YaHei', sans-serif"
       }));
-      canvas.add(new fabric.Line([16, 42, canvasW - 16, 42], { stroke: '#000', strokeWidth: 1.5 }));
+      canvas.add(new fabric.Line([20, 42, canvasW - 20, 42], { stroke: '#000', strokeWidth: 1.5 }));
       canvas.add(new fabric.IText('开封: 2026-11-03 12:00', {
-        left: 18, top: 54, originX: 'left', originY: 'top',
-        fontSize: 13, fontFamily: "'Microsoft YaHei', sans-serif"
+        left: 20, top: 52, originX: 'left', originY: 'top',
+        fontSize: 12, fontFamily: "'Microsoft YaHei', sans-serif"
       }));
       canvas.add(new fabric.IText('保质: 7天内冷藏食用', {
-        left: 18, top: 84, originX: 'left', originY: 'top',
-        fontSize: 13, fontWeight: 'bold', fontFamily: "'Microsoft YaHei', sans-serif"
+        left: 20, top: 76, originX: 'left', originY: 'top',
+        fontSize: 12, fontWeight: 'bold', fontFamily: "'Microsoft YaHei', sans-serif"
       }));
       canvas.renderAll();
       pushHistory();
@@ -530,27 +532,27 @@ document.addEventListener('DOMContentLoaded', () => {
       canvas.backgroundColor = '#ffffff';
 
       canvas.add(new fabric.Rect({
-        left: 10, top: 8, width: canvasW - 20, height: canvasH - 16,
+        left: 14, top: 14, width: canvasW - 28, height: canvasH - 30,
         rx: 8, ry: 8, fill: 'transparent', stroke: '#000', strokeWidth: 2
       }));
       canvas.add(new fabric.IText('特惠尝鲜价', {
-        left: 16, top: 14, originX: 'left', originY: 'top',
-        fontSize: 15, fontWeight: 'bold', fontFamily: "'Microsoft YaHei', sans-serif"
+        left: 20, top: 18, originX: 'left', originY: 'top',
+        fontSize: 14, fontWeight: 'bold', fontFamily: "'Microsoft YaHei', sans-serif"
       }));
       canvas.add(new fabric.IText('¥ 19.90', {
-        left: 16, top: 42, originX: 'left', originY: 'top',
-        fontSize: 26, fontWeight: 'bold', fontFamily: "'Microsoft YaHei', sans-serif"
+        left: 20, top: 40, originX: 'left', originY: 'top',
+        fontSize: 24, fontWeight: 'bold', fontFamily: "'Microsoft YaHei', sans-serif"
       }));
       canvas.add(new fabric.IText('原价: ¥29.90', {
-        left: 16, top: 84, originX: 'left', originY: 'top',
+        left: 20, top: 76, originX: 'left', originY: 'top',
         fontSize: 11, fontFamily: "'Microsoft YaHei', sans-serif"
       }));
 
       // Sample barcode on right
       const bcCanvas = document.createElement('canvas');
-      JsBarcode(bcCanvas, '199026', { format: 'CODE128', displayValue: false, height: 48, margin: 0 });
+      JsBarcode(bcCanvas, '199026', { format: 'CODE128', displayValue: false, height: 44, margin: 0 });
       fabric.Image.fromURL(bcCanvas.toDataURL(), (img) => {
-        img.set({ left: canvasW - 16, top: canvasH / 2, originX: 'right', originY: 'center', scaleX: 0.9, scaleY: 0.9 });
+        img.set({ left: canvasW - 20, top: 54, originX: 'right', originY: 'center', scaleX: 0.85, scaleY: 0.85 });
         canvas.add(img);
         canvas.renderAll();
         pushHistory();

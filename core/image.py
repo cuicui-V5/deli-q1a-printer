@@ -67,9 +67,11 @@ def render_text_label(text: str, orientation: str = 'landscape', border: bool = 
     draw = ImageDraw.Draw(img)
 
     if border:
-        # Safe die-cut margin (1.0mm printhead edge, 1.25mm feed edge, 2px solid thermal border)
-        mx, my = (10, 8) if orientation == 'landscape' else (8, 10)
-        draw.rounded_rectangle([mx, my, cw - mx, ch - my], radius=8, outline=0, width=2)
+        # Calibrated safe die-cut margin (1.75mm feed edge, 1.75mm top, 2.0mm bottom, 2px solid thermal border)
+        if orientation == 'landscape':
+            draw.rounded_rectangle([14, 14, cw - 14, ch - 16], radius=8, outline=0, width=2)
+        else:
+            draw.rounded_rectangle([14, 14, cw - 16, ch - 14], radius=8, outline=0, width=2)
 
     lines = [line.strip() for line in text.split('\\n') if line.strip()]
     if not lines:
