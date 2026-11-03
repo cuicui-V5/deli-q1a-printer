@@ -51,7 +51,7 @@ app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 class PrintRequest(BaseModel):
     image_base64: str          # PNG data URL or pure base64
     mac: Optional[str] = DEFAULT_MAC
-    density: Optional[int] = 1 # 0: Light, 1: Normal, 2: Dark
+    density: Optional[int] = 2 # 0: Light, 1: Normal, 2: Dark (Default to 2: Dark for maximum thermal contrast)
     copies: Optional[int] = 1
     width: Optional[int] = WIDTH_PX
     height: Optional[int] = HEIGHT_PX

@@ -2,6 +2,15 @@
    Deli Q1A Label Studio - Light Elegant Theme & Ergonomic UX
    ========================================================================== */
 
+/* Authentic Chinese 12px Dot-Matrix Pixel Font (100% Offline) */
+@font-face {
+  font-family: 'FusionPixel';
+  src: url('/static/fonts/fusion-pixel-12px-proportional-zh_hans.ttf.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --brand-color: #2563eb;
   --brand-hover: #1d4ed8;

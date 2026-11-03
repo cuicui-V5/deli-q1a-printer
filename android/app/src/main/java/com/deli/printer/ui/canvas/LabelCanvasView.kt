@@ -67,6 +67,12 @@ class LabelCanvasView @JvmOverloads constructor(
     var onHistoryChanged: ((canUndo: Boolean, canRedo: Boolean) -> Unit)? = null
 
     init {
+        try {
+            val tf = Typeface.createFromAsset(context.assets, "fonts/fusion-pixel.ttf")
+            textPaint.typeface = tf
+        } catch (_: Exception) {
+            // Fallback to system default if asset is missing
+        }
         saveStateToHistory()
     }
 

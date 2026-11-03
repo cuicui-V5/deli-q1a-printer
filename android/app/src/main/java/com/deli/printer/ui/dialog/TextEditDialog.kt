@@ -41,8 +41,8 @@ class TextEditDialog : BottomSheetDialogFragment() {
             cbCenter.isChecked = elem.isCentered
         } else {
             etText.setText("文本内容")
-            sbSize.progress = 14
-            tvSizeValue.text = "14 pt"
+            sbSize.progress = 16
+            tvSizeValue.text = "16 pt"
         }
 
         sbSize.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
