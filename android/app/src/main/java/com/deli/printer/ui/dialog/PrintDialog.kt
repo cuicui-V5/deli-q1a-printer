@@ -23,7 +23,7 @@ class PrintDialog : BottomSheetDialogFragment() {
     var onPrintSuccess: (() -> Unit)? = null
 
     private var copies = 1
-    private var density = 2 // 2: Dark (浓黑清晰默认)
+    private var density = 1 // 1: Normal (标准推荐 - 笔画分明)
 
     override fun onCreateView(
         inflater: LayoutInflater,

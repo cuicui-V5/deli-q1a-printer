@@ -75,7 +75,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="热敏浓度 (默认推荐深度浓黑)"
+        android:text="热敏浓度 (标准推荐 - 笔画分明)"
         android:textColor="@color/text_secondary"
         android:textSize="13sp" />
 
@@ -84,7 +84,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
-        android:checkedButton="@+id/rbDensityDark"
+        android:checkedButton="@+id/rbDensityNormal"
         android:orientation="horizontal">
 
         <RadioButton
@@ -99,14 +99,14 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="标准" />
+            android:text="标准 (推荐)" />
 
         <RadioButton
             android:id="@+id/rbDensityDark"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="深度 (推荐)" />
+            android:text="深度" />
     </RadioGroup>
 
     <!-- Progress Indicator -->

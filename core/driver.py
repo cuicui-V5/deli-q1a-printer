@@ -110,7 +110,7 @@ class DeliPrinter:
             await self.client.write_gatt_char(WRITE_CHAR, chunk, response=False)
             await asyncio.sleep(delay)
 
-    async def print_image(self, img: Image.Image, density: int = 2, copies: int = 1):
+    async def print_image(self, img: Image.Image, density: int = 1, copies: int = 1):
         """
         Executes a continuous, seamless print job from a 1-bit monochrome PIL Image.
         """
@@ -166,7 +166,7 @@ class DeliPrinter:
 
         print("All labels printed smoothly and successfully!")
 
-async def print_job(mac: str, img: Image.Image, density: int = 2, copies: int = 1):
+async def print_job(mac: str, img: Image.Image, density: int = 1, copies: int = 1):
     """Convenience helper function to connect, print, and disconnect in one call."""
     printer = DeliPrinter(mac=mac)
     try:

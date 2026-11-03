@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ── Adding Text Elements ────────────────────────────────────────────
-  function addText(text, fontSize = 18, isBold = false) {
+  function addText(text, fontSize = 16, isBold = false) {
     const t = new fabric.IText(text, {
       left: canvasW / 2,
       top: canvasH / 2,
@@ -187,9 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
       fontSize: fontSize,
       fontFamily: "'FusionPixel', 'Microsoft YaHei', sans-serif",
       fontWeight: isBold ? 'bold' : 'normal',
-      fill: '#000000',
-      stroke: '#000000',
-      strokeWidth: isBold ? 0.4 : 0.25
+      fill: '#000000'
     });
     canvas.add(t);
     canvas.setActiveObject(t);
@@ -197,10 +195,10 @@ document.addEventListener('DOMContentLoaded', () => {
     pushHistory();
   }
 
-  document.getElementById('btnAddHeading').addEventListener('click', () => addText('标题文字', 20, true));
-  document.getElementById('btnAddSubtitle').addEventListener('click', () => addText('副标题规格', 15, false));
-  document.getElementById('btnAddBody').addEventListener('click', () => addText('备注说明文字', 13, false));
-  document.getElementById('btnAddMultiLine').addEventListener('click', () => addText('第一行项目\n第二行项目', 14, false));
+  document.getElementById('btnAddHeading').addEventListener('click', () => addText('标题文字', 18, true));
+  document.getElementById('btnAddSubtitle').addEventListener('click', () => addText('副标题规格', 14, false));
+  document.getElementById('btnAddBody').addEventListener('click', () => addText('备注说明文字', 12, false));
+  document.getElementById('btnAddMultiLine').addEventListener('click', () => addText('第一行项目\n第二行项目', 13, false));
 
   // ── Adding Barcode & QR Code ────────────────────────────────────────
   document.getElementById('btnAddQrCode').addEventListener('click', () => {
@@ -462,22 +460,22 @@ document.addEventListener('DOMContentLoaded', () => {
       // Title
       canvas.add(new fabric.IText('居家整理收纳', {
         left: canvasW / 2, top: 10, originX: 'center', originY: 'top',
-        fontSize: 16, fontWeight: 'bold', fontFamily: "'FusionPixel', 'Microsoft YaHei', sans-serif",
-        fill: '#000000', stroke: '#000000', strokeWidth: 0.4
+        fontSize: 15, fontWeight: 'bold', fontFamily: "'FusionPixel', 'Microsoft YaHei', sans-serif",
+        fill: '#000000'
       }));
       // Divider
-      canvas.add(new fabric.Line([16, 34, canvasW - 16, 34], { stroke: '#000', strokeWidth: 1.5 }));
+      canvas.add(new fabric.Line([16, 32, canvasW - 16, 32], { stroke: '#000', strokeWidth: 1.5 }));
       // Subtitle
       canvas.add(new fabric.IText('物品: 数据线 / 扩展坞', {
         left: canvasW / 2, top: 42, originX: 'center', originY: 'top',
         fontSize: 13, fontFamily: "'FusionPixel', 'Microsoft YaHei', sans-serif",
-        fill: '#000000', stroke: '#000000', strokeWidth: 0.3
+        fill: '#000000'
       }));
       // Subtext
       canvas.add(new fabric.IText('2026-11-03 整理于书房', {
         left: canvasW / 2, top: 64, originX: 'center', originY: 'top',
         fontSize: 12, fontFamily: "'FusionPixel', 'Microsoft YaHei', sans-serif",
-        fill: '#000000', stroke: '#000000', strokeWidth: 0.3
+        fill: '#000000'
       }));
       canvas.renderAll();
       pushHistory();
@@ -491,21 +489,21 @@ document.addEventListener('DOMContentLoaded', () => {
         left: 10, top: 4, width: canvasW - 20, height: canvasH - 8,
         rx: 6, ry: 6, fill: 'transparent', stroke: '#000', strokeWidth: 2
       }));
-      canvas.add(new fabric.IText('🔌 Type-C 快充线', {
+      canvas.add(new fabric.IText('Type-C 快充线', {
         left: 20, top: 10, originX: 'left', originY: 'top',
-        fontSize: 16, fontWeight: 'bold', fontFamily: "'FusionPixel', 'Microsoft YaHei', sans-serif",
-        fill: '#000000', stroke: '#000000', strokeWidth: 0.4
+        fontSize: 15, fontWeight: 'bold', fontFamily: "'FusionPixel', 'Microsoft YaHei', sans-serif",
+        fill: '#000000'
       }));
-      canvas.add(new fabric.Line([16, 34, canvasW - 16, 34], { stroke: '#000', strokeWidth: 1.5 }));
+      canvas.add(new fabric.Line([16, 32, canvasW - 16, 32], { stroke: '#000', strokeWidth: 1.5 }));
       canvas.add(new fabric.IText('规格: 100W PD 快充', {
         left: 20, top: 42, originX: 'left', originY: 'top',
         fontSize: 13, fontFamily: "'FusionPixel', 'Microsoft YaHei', sans-serif",
-        fill: '#000000', stroke: '#000000', strokeWidth: 0.3
+        fill: '#000000'
       }));
       canvas.add(new fabric.IText('位置: 桌面主显示器', {
         left: 20, top: 64, originX: 'left', originY: 'top',
         fontSize: 12, fontFamily: "'FusionPixel', 'Microsoft YaHei', sans-serif",
-        fill: '#000000', stroke: '#000000', strokeWidth: 0.3
+        fill: '#000000'
       }));
       canvas.renderAll();
       pushHistory();
@@ -519,21 +517,21 @@ document.addEventListener('DOMContentLoaded', () => {
         left: 10, top: 4, width: canvasW - 20, height: canvasH - 8,
         rx: 6, ry: 6, fill: 'transparent', stroke: '#000', strokeWidth: 2
       }));
-      canvas.add(new fabric.IText('🍎 食品赏味保鲜标', {
+      canvas.add(new fabric.IText('食品赏味保鲜标', {
         left: canvasW / 2, top: 10, originX: 'center', originY: 'top',
-        fontSize: 16, fontWeight: 'bold', fontFamily: "'FusionPixel', 'Microsoft YaHei', sans-serif",
-        fill: '#000000', stroke: '#000000', strokeWidth: 0.4
+        fontSize: 15, fontWeight: 'bold', fontFamily: "'FusionPixel', 'Microsoft YaHei', sans-serif",
+        fill: '#000000'
       }));
-      canvas.add(new fabric.Line([16, 34, canvasW - 16, 34], { stroke: '#000', strokeWidth: 1.5 }));
+      canvas.add(new fabric.Line([16, 32, canvasW - 16, 32], { stroke: '#000', strokeWidth: 1.5 }));
       canvas.add(new fabric.IText('开封: 2026-11-03 12:00', {
         left: 20, top: 42, originX: 'left', originY: 'top',
         fontSize: 13, fontFamily: "'FusionPixel', 'Microsoft YaHei', sans-serif",
-        fill: '#000000', stroke: '#000000', strokeWidth: 0.3
+        fill: '#000000'
       }));
       canvas.add(new fabric.IText('保质: 7天内冷藏食用', {
         left: 20, top: 64, originX: 'left', originY: 'top',
-        fontSize: 13, fontWeight: 'bold', fontFamily: "'FusionPixel', 'Microsoft YaHei', sans-serif",
-        fill: '#000000', stroke: '#000000', strokeWidth: 0.4
+        fontSize: 13, fontFamily: "'FusionPixel', 'Microsoft YaHei', sans-serif",
+        fill: '#000000'
       }));
       canvas.renderAll();
       pushHistory();
@@ -550,17 +548,17 @@ document.addEventListener('DOMContentLoaded', () => {
       canvas.add(new fabric.IText('特惠尝鲜价', {
         left: 20, top: 10, originX: 'left', originY: 'top',
         fontSize: 14, fontWeight: 'bold', fontFamily: "'FusionPixel', 'Microsoft YaHei', sans-serif",
-        fill: '#000000', stroke: '#000000', strokeWidth: 0.4
+        fill: '#000000'
       }));
       canvas.add(new fabric.IText('¥ 19.90', {
         left: 20, top: 32, originX: 'left', originY: 'top',
-        fontSize: 22, fontWeight: 'bold', fontFamily: "'FusionPixel', 'Microsoft YaHei', sans-serif",
-        fill: '#000000', stroke: '#000000', strokeWidth: 0.5
+        fontSize: 20, fontWeight: 'bold', fontFamily: "'FusionPixel', 'Microsoft YaHei', sans-serif",
+        fill: '#000000'
       }));
       canvas.add(new fabric.IText('原价: ¥29.90', {
         left: 20, top: 66, originX: 'left', originY: 'top',
         fontSize: 12, fontFamily: "'FusionPixel', 'Microsoft YaHei', sans-serif",
-        fill: '#000000', stroke: '#000000', strokeWidth: 0.3
+        fill: '#000000'
       }));
 
       // Sample barcode on right
@@ -692,12 +690,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (active) {
       const isBold = active.fontWeight === 'bold';
       active.set('fontWeight', isBold ? 'normal' : 'bold');
-      if (active.type === 'i-text' || active.type === 'text') {
-        active.set({
-          stroke: '#000000',
-          strokeWidth: isBold ? 0.25 : 0.4
-        });
-      }
       propBoldBtn.classList.toggle('active', !isBold);
       canvas.renderAll();
       pushHistory();
