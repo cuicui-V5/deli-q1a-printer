@@ -22,7 +22,7 @@ object DeliProtocol {
     // Hardware Printhead Geometry (12.0mm native hardware printhead = 96 dots, 12 bytes/line)
     const val MAX_PRINTHEAD_WIDTH_PX = 96
     const val DEFAULT_WIDTH_PX = 96
-    const val DEFAULT_HEIGHT_PX = 216 // 27mm printable length for 30mm label
+    const val DEFAULT_HEIGHT_PX = 240 // 30mm label feed length (240 dots)
     const val DEFAULT_WIDTH_BYTES = 12
 
     // Control Commands (LuckPrinter / Lujiang protocol family)

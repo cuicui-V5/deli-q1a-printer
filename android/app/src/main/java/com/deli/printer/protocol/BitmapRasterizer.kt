@@ -82,8 +82,8 @@ object BitmapRasterizer {
                         // Standard luminance formula
                         val lum = (0.299 * r + 0.587 * g + 0.114 * b).toInt()
 
-                        // Dark dot if luminance < 128 and not fully transparent
-                        if (alpha > 50 && lum < 128) {
+                        // Dark dot if luminance < 200 (preserves anti-aliased vector strokes & borders)
+                        if (alpha > 50 && lum < 200) {
                             byteVal = byteVal or (1 shl (7 - bit)) // MSB leftmost
                         }
                     }

@@ -209,19 +209,22 @@ class MainActivity : AppCompatActivity() {
             .setItems(options) { _, which ->
                 val w = canvasView.canvasDotWidth.toFloat()
                 val h = canvasView.canvasDotHeight.toFloat()
+                val mx = if (w > h) 10f else 4f
+                val my = if (w > h) 4f else 10f
                 when (which) {
                     0 -> canvasView.addElement(
                         ShapeElement(
-                            x = 4f, y = 4f,
-                            width = w - 8f, height = h - 8f,
+                            x = mx, y = my,
+                            width = w - mx * 2f, height = h - my * 2f,
                             shapeType = ShapeType.ROUNDED_BORDER,
+                            strokeWidth = 2f,
                             cornerRadius = 6f
                         )
                     )
                     1 -> canvasView.addElement(
                         ShapeElement(
-                            x = 14f, y = h / 2f,
-                            width = w - 28f, height = 1f,
+                            x = 16f, y = h / 2f,
+                            width = w - 32f, height = 1.5f,
                             shapeType = ShapeType.DIVIDER_LINE
                         )
                     )

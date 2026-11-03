@@ -37,9 +37,9 @@ object DeliProtocol {
     val WRITE_CHAR_UUID: UUID = UUID.fromString("0000ff02-0000-1000-8000-00805f9b34fb")
     val NOTIFY_CHAR_UUID: UUID = UUID.fromString("0000ff01-0000-1000-8000-00805f9b34fb")
 
-    const val WIDTH_PX = 120      // 15mm 耗材满幅: 15 字节 / 行 (120 点)
-    const val HEIGHT_PX = 240     // 30mm 耗材长度: 240 行点阵 (30mm @ 8 dots/mm)
-    const val MAX_WIDTH_PX = 120  // 热敏打印头最大点数 (15mm 满幅)
+    const val WIDTH_PX = 96       // 原生硬件打印头宽度: 12 字节 / 行 (96 点 = 12.0mm)
+    const val HEIGHT_PX = 240     // 30mm 标签耗材长度: 240 行点阵 (30mm @ 8 dots/mm)
+    const val MAX_WIDTH_PX = 96   // 物理热敏电阻丝最大容量 (96 点，杜绝移位寄存器溢出)
 
     // 核心控制指令
     val CMD_ENABLE     = byteArrayOf(0x10.toByte(), 0xFF.toByte(), 0xF1.toByte(), 0x03.toByte())

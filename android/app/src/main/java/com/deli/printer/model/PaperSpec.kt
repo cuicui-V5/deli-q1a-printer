@@ -10,7 +10,8 @@ data class PaperSpec(
     val lengthMm: Int,
     val isGapPaper: Boolean = true
 ) {
-    val widthPx: Int get() = widthMm * 8   // 8 dots per mm at 203 DPI
+    // Deli Q1A hardware printhead is physically 12mm (96 dots = 12 bytes/line)
+    val widthPx: Int get() = minOf(widthMm * 8, 96)
     val lengthPx: Int get() = lengthMm * 8
 
     companion object {
