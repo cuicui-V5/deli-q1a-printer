@@ -13,7 +13,7 @@ EVENT_CHAR   = "0000ff03-0000-1000-8000-00805f9b34fb"  # Notification (Printer e
 DEFAULT_MAC = "5E:55:09:F0:A2:1E"
 DPI = 203                         # 8 dots per mm (203 / 25.4 ≈ 7.992 dots/mm)
 WIDTH_PX = 96                     # Hardware thermal printhead width: 96 dots = 12.0mm (12 bytes per line)
-HEIGHT_PX = 216                   # Printable feed length: 216 dots = 27.0mm (for 30mm gap label)
+HEIGHT_PX = 240                   # Label feed length: 240 dots = 30.0mm (for 15x30mm gap label)
 WIDTH_BYTES = WIDTH_PX // 8       # 12 bytes per line (0x0C)
 MAX_WIDTH_PX = 96                 # Physical hardware shift register capacity (96 dots)
 

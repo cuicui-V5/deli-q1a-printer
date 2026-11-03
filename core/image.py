@@ -67,8 +67,9 @@ def render_text_label(text: str, orientation: str = 'landscape', border: bool = 
     draw = ImageDraw.Draw(img)
 
     if border:
-        # Full 4-sided rounded border contouring native 96x216 printable hardware matrix
-        draw.rounded_rectangle([4, 4, cw - 4, ch - 4], radius=6, outline=0, width=2)
+        # Full 4-sided symmetrical rounded border for 240x96 native geometry
+        mx, my = (10, 4) if orientation == 'landscape' else (4, 10)
+        draw.rounded_rectangle([mx, my, cw - mx, ch - my], radius=6, outline=0, width=2)
 
     lines = [line.strip() for line in text.split('\\n') if line.strip()]
     if not lines:
