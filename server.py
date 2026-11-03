@@ -19,20 +19,15 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 import uvicorn
-from bleak import BleakScanner
 
 # Import core printer driver routines
-from deli_print import (
+from core import (
     DEFAULT_MAC,
-    SERVICE_UUID,
-    WRITE_CHAR,
-    NOTIFY_CHAR,
-    EVENT_CHAR,
     WIDTH_PX,
     HEIGHT_PX,
-    bitmap_to_raw_bytes,
-    write_chunks,
-    print_job
+    DeliPrinter,
+    print_job,
+    render_text_label
 )
 
 app = FastAPI(title="Deli Q1A Label Studio", description="Web-based Label Designer and BLE Driver for Deli Q1A")
@@ -86,26 +81,8 @@ async def get_config():
 async def scan_ble_devices():
     """Scans for nearby BLE devices, identifying Deli printers."""
     try:
-        devices = await BleakScanner.discover(timeout=5.0)
-        result = []
-        for d in devices:
-            name = d.name or "Unknown Device"
-            is_deli = bool(
-                name and (
-                    'Q1' in name.upper() or 
-                    'DELI' in name.upper() or 
-                    'A21E' in name.upper() or
-                    'SS_' in name.upper()
-                ) or (d.address.upper() == DEFAULT_MAC.upper())
-            )
-            result.append({
-                "name": name,
-                "address": d.address,
-                "is_deli": is_deli
-            })
-        # Sort matched printers first
-        result.sort(key=lambda x: not x["is_deli"])
-        return {"devices": result}
+        devices = await DeliPrinter.scan(timeout=5.0)
+        return {"devices": devices}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"BLE scan failed: {str(e)}")
 
@@ -169,7 +146,6 @@ async def handle_print(req: PrintRequest):
 async def handle_test_print():
     """Generates and prints the verified test calibration label."""
     try:
-        from deli_print import render_text_label
         img = render_text_label(
             "得力 Q1A 标签机\\n免芯片打印成功!\\n15x30mm 间隙纸",
             orientation='landscape',

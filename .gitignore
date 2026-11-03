@@ -8,6 +8,7 @@
 
 # Research logs & archives
 archive_wewin_research/
+deli_app_analysis/
 *.txt
 !requirements.txt
 *.log

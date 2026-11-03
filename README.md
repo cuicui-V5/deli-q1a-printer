@@ -4,6 +4,31 @@
 
 ![成功打印实物图](assets/success_print.jpg)
 
+## 📁 项目工程架构
+
+本项目采用清晰的三层解耦架构设计，兼顾**极简学习移植**与**丰富应用体验**：
+
+```
+deli-q1a-printer/
+├── core/                       # 🌟 核心协议与硬件驱动 SDK (纯净轻量，无 Web 依赖)
+│   ├── protocol.py             # 底层蓝牙 UUID、控制指令集、光栅管道构造器
+│   ├── image.py                # 1-Bit 单色点阵转换与 Floyd-Steinberg 图像算法
+│   └── driver.py               # 异步 BLE 驱动引擎 (DeliPrinter)
+├── deli_print.py               # 💻 独立命令行 CLI 工具 (适合脚本自动化与终端打印)
+├── server.py                   # 🌐 WebApp 后端服务 (FastAPI REST API)
+├── web/                        # 🎨 WebApp 可视化画板前端 (纯浅色优雅交互设计)
+│   ├── index.html              # 画布、工具箱、图元检查器与打印控制台
+│   └── static/                 # 样式、前端交互引擎与离线 JS 依赖 (Fabric.js, JsBarcode, QRCode)
+├── docs/                       # 📚 深度逆向文档与移动端移植指南
+│   ├── PROTOCOL.md             # 完整通信协议白皮书与时序规范
+│   └── ANDROID_PORTING.md      # Android 原生 App 移植实战指南 (Kotlin 协程实现)
+├── assets/                     # 成功打印实物图与 WebApp 预览截图
+├── requirements.txt            # 项目依赖
+└── README.md                   # 项目使用手册与逆向分析总结
+```
+
+---
+
 ## 🎨 得力 Q1A 标签工坊 WebApp (可视化画板设计与打印)
 
 除了强大的 Python CLI 命令行驱动，本项目还内置了一套**现代化、轻量优雅的 WebApp 可视化设计工坊**，为广大用户提供如同专业标签机 App 般的交互设计体验！
