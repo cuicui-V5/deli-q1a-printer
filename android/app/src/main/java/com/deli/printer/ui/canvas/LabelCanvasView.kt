@@ -105,6 +105,18 @@ class LabelCanvasView @JvmOverloads constructor(
 
     fun getSelectedElement(): CanvasElement? = selectedElement
 
+    fun deselectAll() {
+        elements.forEach { it.isSelected = false }
+        selectedElement = null
+        onSelectionChanged?.invoke(null)
+        invalidate()
+    }
+
+    fun notifyElementModified() {
+        saveStateToHistory()
+        invalidate()
+    }
+
     fun removeSelected() {
         val sel = selectedElement ?: return
         elements.remove(sel)
@@ -213,7 +225,7 @@ class LabelCanvasView @JvmOverloads constructor(
 
         // Render Selection Handle & Delete Button in view coordinate space
         selectedElement?.let { sel ->
-            val bounds = sel.getBounds()
+            val bounds = getElementBounds(sel)
             val left = offsetX + bounds.left * displayScale - 6f
             val top = offsetY + bounds.top * displayScale - 6f
             val right = offsetX + bounds.right * displayScale + 6f
@@ -224,6 +236,23 @@ class LabelCanvasView @JvmOverloads constructor(
             // Delete circle button on top-right corner
             canvas.drawCircle(right, top, 18f, deleteBtnPaint)
             canvas.drawText("×", right, top + 8f, deleteTextPaint)
+        }
+    }
+
+    fun getElementBounds(elem: CanvasElement): RectF {
+        return when (elem) {
+            is TextElement -> {
+                textPaint.textSize = elem.textSize
+                textPaint.isFakeBoldText = elem.isBold
+                val textWidth = textPaint.measureText(elem.text).coerceAtLeast(16f)
+                val textHeight = elem.textSize * 1.35f
+                val left = if (elem.isCentered) elem.x - textWidth / 2f else elem.x
+                val top = elem.y
+                RectF(left, top, left + textWidth, top + textHeight)
+            }
+            is BarcodeElement -> RectF(elem.x, elem.y, elem.x + elem.width, elem.y + elem.height)
+            is ShapeElement -> RectF(elem.x, elem.y, elem.x + elem.width, elem.y + elem.height)
+            is ImageElement -> RectF(elem.x, elem.y, elem.x + elem.width, elem.y + elem.height)
         }
     }
 
@@ -276,11 +305,11 @@ class LabelCanvasView @JvmOverloads constructor(
 
                 // Check if Delete Button was tapped
                 selectedElement?.let { sel ->
-                    val b = sel.getBounds()
+                    val b = getElementBounds(sel)
                     val btnX = offsetX + b.right * displayScale + 6f
                     val btnY = offsetY + b.top * displayScale - 6f
                     val dist = Math.hypot((x - btnX).toDouble(), (y - btnY).toDouble())
-                    if (dist <= 30) {
+                    if (dist <= 36) {
                         removeSelected()
                         return true
                     }
@@ -290,7 +319,10 @@ class LabelCanvasView @JvmOverloads constructor(
                 val dotX = (x - offsetX) / displayScale
                 val dotY = (y - offsetY) / displayScale
 
-                val clicked = elements.findLast { it.getBounds().contains(dotX, dotY) }
+                val clicked = elements.findLast { elem ->
+                    val b = getElementBounds(elem)
+                    RectF(b.left - 8f, b.top - 8f, b.right + 8f, b.bottom + 8f).contains(dotX, dotY)
+                }
                 if (clicked != null) {
                     elements.forEach { it.isSelected = false }
                     clicked.isSelected = true
@@ -301,10 +333,7 @@ class LabelCanvasView @JvmOverloads constructor(
                     return true
                 } else {
                     if (selectedElement != null) {
-                        elements.forEach { it.isSelected = false }
-                        selectedElement = null
-                        onSelectionChanged?.invoke(null)
-                        invalidate()
+                        deselectAll()
                     }
                 }
             }

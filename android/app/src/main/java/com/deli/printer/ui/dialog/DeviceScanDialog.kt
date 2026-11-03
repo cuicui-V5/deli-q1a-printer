@@ -18,7 +18,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-class DeviceScanDialog : BottomSheetDialogFragment() {
+class DeviceScanDialog : BaseBottomSheetDialogFragment() {
 
     private lateinit var adapter: DeviceAdapter
     private val bleManager get() = DeliApp.instance.bleManager

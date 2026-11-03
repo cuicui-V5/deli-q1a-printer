@@ -11,7 +11,7 @@ import com.deli.printer.model.BarcodeElement
 import com.deli.printer.model.BarcodeType
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-class BarcodeDialog : BottomSheetDialogFragment() {
+class BarcodeDialog : BaseBottomSheetDialogFragment() {
 
     var onConfirm: ((BarcodeElement) -> Unit)? = null
 

@@ -1,91 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/bg_card"
-    android:orientation="vertical"
-    android:padding="20dp">
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="编辑文本"
-        android:textColor="@color/text_primary"
-        android:textSize="18sp"
-        android:textStyle="bold" />
-
-    <EditText
-        android:id="@+id/etTextInput"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:background="@drawable/bg_pill"
-        android:hint="输入想要打印的文本内容"
-        android:padding="12dp"
-        android:textColor="@color/text_primary"
-        android:textSize="15sp" />
+    android:fillViewport="true"
+    android:background="@color/bg_card">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:orientation="vertical"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="40dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="字号大小:"
-            android:textColor="@color/text_primary" />
-
-        <SeekBar
-            android:id="@+id/sbTextSize"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:max="32"
-            android:progress="14" />
-
-        <TextView
-            android:id="@+id/tvTextSizeValue"
-            android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:gravity="end"
-            android:text="14 pt"
-            android:textColor="@color/brand_primary"
+            android:text="编辑文本内容"
+            android:textColor="@color/text_primary"
+            android:textSize="18sp"
             android:textStyle="bold" />
-    </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:orientation="horizontal">
-
-        <CheckBox
-            android:id="@+id/cbBold"
-            android:layout_width="wrap_content"
+        <EditText
+            android:id="@+id/etTextInput"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="粗体 (Bold)" />
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_pill"
+            android:hint="输入想要打印的文本内容"
+            android:padding="12dp"
+            android:textColor="@color/text_primary"
+            android:textSize="15sp" />
 
-        <CheckBox
-            android:id="@+id/cbCenter"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:text="居中对齐" />
+            android:layout_marginTop="14dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="字号大小:"
+                android:textColor="@color/text_primary"
+                android:textSize="14sp" />
+
+            <SeekBar
+                android:id="@+id/sbTextSize"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:max="36"
+                android:progress="18" />
+
+            <TextView
+                android:id="@+id/tvTextSizeValue"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:text="18 pt"
+                android:textColor="@color/brand_primary"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:id="@+id/cbBold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="粗体 (Bold)"
+                android:textColor="@color/text_primary" />
+
+            <CheckBox
+                android:id="@+id/cbCenter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:text="居中对齐"
+                android:textColor="@color/text_primary" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnSaveText"
+            android:layout_width="match_parent"
+            android:layout_height="46dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_btn_primary"
+            android:text="确认保存"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
     </LinearLayout>
-
-    <Button
-        android:id="@+id/btnSaveText"
-        android:layout_width="match_parent"
-        android:layout_height="44dp"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/bg_btn_primary"
-        android:text="确认添加/修改"
-        android:textColor="@color/white"
-        android:textSize="14sp"
-        android:textStyle="bold" />
-
-</LinearLayout>
+</androidx.core.widget.NestedScrollView>

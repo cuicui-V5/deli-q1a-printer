@@ -9,7 +9,7 @@ import com.deli.printer.R
 import com.deli.printer.model.TextElement
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-class TextEditDialog : BottomSheetDialogFragment() {
+class TextEditDialog : BaseBottomSheetDialogFragment() {
 
     var textElement: TextElement? = null
     var onConfirm: ((TextElement) -> Unit)? = null

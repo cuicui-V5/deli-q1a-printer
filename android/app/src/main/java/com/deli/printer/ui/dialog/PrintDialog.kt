@@ -14,7 +14,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-class PrintDialog : BottomSheetDialogFragment() {
+class PrintDialog : BaseBottomSheetDialogFragment() {
 
     private val bleManager get() = DeliApp.instance.bleManager
 

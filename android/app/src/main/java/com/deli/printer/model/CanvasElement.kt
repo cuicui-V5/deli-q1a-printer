@@ -23,7 +23,14 @@ data class TextElement(
     var isCentered: Boolean = false,
     override var isSelected: Boolean = false
 ) : CanvasElement() {
-    override fun getBounds(): RectF = RectF(x, y, x + 80f, y + textSize * 1.4f)
+    override fun getBounds(): RectF {
+        var w = 0f
+        for (ch in text) {
+            w += if (ch.code > 127) textSize else textSize * 0.6f
+        }
+        val left = if (isCentered) x - w / 2f else x
+        return RectF(left, y, left + w, y + textSize * 1.35f)
+    }
     override fun copyElement(): CanvasElement = this.copy()
 }
 

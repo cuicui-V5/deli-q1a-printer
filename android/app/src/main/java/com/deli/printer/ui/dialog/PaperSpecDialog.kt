@@ -10,7 +10,7 @@ import com.deli.printer.R
 import com.deli.printer.model.PaperSpec
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-class PaperSpecDialog : BottomSheetDialogFragment() {
+class PaperSpecDialog : BaseBottomSheetDialogFragment() {
 
     var onSpecSelected: ((PaperSpec) -> Unit)? = null
 
