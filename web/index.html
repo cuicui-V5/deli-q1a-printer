@@ -368,19 +368,8 @@
 
               <div class="form-row" style="margin-top: 8px;">
                 <div class="form-col">
-                  <label class="form-label">字体</label>
-                  <select id="propFontFamily" class="form-select">
-                    <option value="'FusionPixel', 'Microsoft YaHei', sans-serif" selected>点阵像素体 (热敏清晰推荐)</option>
-                    <option value="'Microsoft YaHei', sans-serif">微软雅黑</option>
-                    <option value="SimSun, serif">宋体</option>
-                    <option value="SimHei, sans-serif">黑体</option>
-                    <option value="Arial, sans-serif">Arial</option>
-                    <option value="monospace">等宽体</option>
-                  </select>
-                </div>
-                <div class="form-col-sm">
-                  <label class="form-label">字号</label>
-                  <input type="number" id="propFontSize" class="form-input" min="8" max="72" value="18">
+                  <label class="form-label">字号 (默认思源黑体)</label>
+                  <input type="number" id="propFontSize" class="form-input" min="8" max="72" value="16">
                 </div>
               </div>
 
@@ -493,6 +482,6 @@
   <div class="toast-container" id="toastContainer"></div>
 
   <!-- Main WebApp Logic -->
-  <script src="/static/js/app.js?v=1.4.0"></script>
+  <script src="/static/js/app.js?v=1.5.0"></script>
 </body>
 </html>

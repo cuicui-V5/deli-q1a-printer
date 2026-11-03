@@ -2,10 +2,10 @@
    Deli Q1A Label Studio - Light Elegant Theme & Ergonomic UX
    ========================================================================== */
 
-/* Authentic Chinese 12px Dot-Matrix Pixel Font (100% Offline) */
+/* Official Source Han Sans / Noto Sans SC (思源黑体) */
 @font-face {
-  font-family: 'FusionPixel';
-  src: url('/static/fonts/fusion-pixel-12px-proportional-zh_hans.ttf.woff2') format('woff2');
+  font-family: 'SourceHanSans';
+  src: local('Noto Sans SC'), local('Source Han Sans SC'), url('/static/fonts/NotoSansSC.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
   font-display: swap;

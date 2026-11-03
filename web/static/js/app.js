@@ -185,7 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
       originX: 'center',
       originY: 'center',
       fontSize: fontSize,
-      fontFamily: "'FusionPixel', 'Microsoft YaHei', sans-serif",
+      fontFamily: "'SourceHanSans', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif",
       fontWeight: isBold ? 'bold' : 'normal',
       fill: '#000000'
     });
@@ -460,7 +460,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Title
       canvas.add(new fabric.IText('居家整理收纳', {
         left: canvasW / 2, top: 10, originX: 'center', originY: 'top',
-        fontSize: 15, fontWeight: 'bold', fontFamily: "'FusionPixel', 'Microsoft YaHei', sans-serif",
+        fontSize: 15, fontWeight: 'bold', fontFamily: "'SourceHanSans', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif",
         fill: '#000000'
       }));
       // Divider
@@ -468,13 +468,13 @@ document.addEventListener('DOMContentLoaded', () => {
       // Subtitle
       canvas.add(new fabric.IText('物品: 数据线 / 扩展坞', {
         left: canvasW / 2, top: 42, originX: 'center', originY: 'top',
-        fontSize: 13, fontFamily: "'FusionPixel', 'Microsoft YaHei', sans-serif",
+        fontSize: 13, fontFamily: "'SourceHanSans', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif",
         fill: '#000000'
       }));
       // Subtext
       canvas.add(new fabric.IText('2026-11-03 整理于书房', {
         left: canvasW / 2, top: 64, originX: 'center', originY: 'top',
-        fontSize: 12, fontFamily: "'FusionPixel', 'Microsoft YaHei', sans-serif",
+        fontSize: 12, fontFamily: "'SourceHanSans', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif",
         fill: '#000000'
       }));
       canvas.renderAll();
@@ -491,18 +491,18 @@ document.addEventListener('DOMContentLoaded', () => {
       }));
       canvas.add(new fabric.IText('Type-C 快充线', {
         left: 20, top: 10, originX: 'left', originY: 'top',
-        fontSize: 15, fontWeight: 'bold', fontFamily: "'FusionPixel', 'Microsoft YaHei', sans-serif",
+        fontSize: 15, fontWeight: 'bold', fontFamily: "'SourceHanSans', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif",
         fill: '#000000'
       }));
       canvas.add(new fabric.Line([16, 32, canvasW - 16, 32], { stroke: '#000', strokeWidth: 1.5 }));
       canvas.add(new fabric.IText('规格: 100W PD 快充', {
         left: 20, top: 42, originX: 'left', originY: 'top',
-        fontSize: 13, fontFamily: "'FusionPixel', 'Microsoft YaHei', sans-serif",
+        fontSize: 13, fontFamily: "'SourceHanSans', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif",
         fill: '#000000'
       }));
       canvas.add(new fabric.IText('位置: 桌面主显示器', {
         left: 20, top: 64, originX: 'left', originY: 'top',
-        fontSize: 12, fontFamily: "'FusionPixel', 'Microsoft YaHei', sans-serif",
+        fontSize: 12, fontFamily: "'SourceHanSans', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif",
         fill: '#000000'
       }));
       canvas.renderAll();
@@ -519,18 +519,18 @@ document.addEventListener('DOMContentLoaded', () => {
       }));
       canvas.add(new fabric.IText('食品赏味保鲜标', {
         left: canvasW / 2, top: 10, originX: 'center', originY: 'top',
-        fontSize: 15, fontWeight: 'bold', fontFamily: "'FusionPixel', 'Microsoft YaHei', sans-serif",
+        fontSize: 15, fontWeight: 'bold', fontFamily: "'SourceHanSans', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif",
         fill: '#000000'
       }));
       canvas.add(new fabric.Line([16, 32, canvasW - 16, 32], { stroke: '#000', strokeWidth: 1.5 }));
       canvas.add(new fabric.IText('开封: 2026-11-03 12:00', {
         left: 20, top: 42, originX: 'left', originY: 'top',
-        fontSize: 13, fontFamily: "'FusionPixel', 'Microsoft YaHei', sans-serif",
+        fontSize: 13, fontFamily: "'SourceHanSans', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif",
         fill: '#000000'
       }));
       canvas.add(new fabric.IText('保质: 7天内冷藏食用', {
         left: 20, top: 64, originX: 'left', originY: 'top',
-        fontSize: 13, fontFamily: "'FusionPixel', 'Microsoft YaHei', sans-serif",
+        fontSize: 13, fontFamily: "'SourceHanSans', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif",
         fill: '#000000'
       }));
       canvas.renderAll();
@@ -547,22 +547,31 @@ document.addEventListener('DOMContentLoaded', () => {
       }));
       canvas.add(new fabric.IText('特惠尝鲜价', {
         left: 20, top: 10, originX: 'left', originY: 'top',
-        fontSize: 14, fontWeight: 'bold', fontFamily: "'FusionPixel', 'Microsoft YaHei', sans-serif",
+        fontSize: 14, fontWeight: 'bold', fontFamily: "'SourceHanSans', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif",
         fill: '#000000'
       }));
       canvas.add(new fabric.IText('¥ 19.90', {
         left: 20, top: 32, originX: 'left', originY: 'top',
-        fontSize: 20, fontWeight: 'bold', fontFamily: "'FusionPixel', 'Microsoft YaHei', sans-serif",
+        fontSize: 20, fontWeight: 'bold', fontFamily: "'SourceHanSans', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif",
         fill: '#000000'
       }));
       canvas.add(new fabric.IText('原价: ¥29.90', {
         left: 20, top: 66, originX: 'left', originY: 'top',
-        fontSize: 12, fontFamily: "'FusionPixel', 'Microsoft YaHei', sans-serif",
+        fontSize: 12, fontFamily: "'SourceHanSans', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif",
         fill: '#000000'
       }));
 
       // Sample barcode on right
       const bcCanvas = document.createElement('canvas');
+      JsBarcode(bcCanvas, '199026', { format: 'CODE128', displayValue: false, height: 38, margin: 0 });
+      fabric.Image.fromURL(bcCanvas.toDataURL(), (img) => {
+        img.set({ left: canvasW - 18, top: 44, originX: 'right', originY: 'center', scaleX: 0.85, scaleY: 0.85 });
+        canvas.add(img);
+        canvas.renderAll();
+        pushHistory();
+      });
+    }
+  };
       JsBarcode(bcCanvas, '199026', { format: 'CODE128', displayValue: false, height: 38, margin: 0 });
       fabric.Image.fromURL(bcCanvas.toDataURL(), (img) => {
         img.set({ left: canvasW - 18, top: 44, originX: 'right', originY: 'center', scaleX: 0.85, scaleY: 0.85 });
@@ -628,7 +637,6 @@ document.addEventListener('DOMContentLoaded', () => {
       shapePropsSection.style.display = 'none';
 
       propTextContent.value = active.text;
-      propFontFamily.value = active.fontFamily || "'FusionPixel', 'Microsoft YaHei', sans-serif";
       propFontSize.value = active.fontSize;
 
       propBoldBtn.classList.toggle('active', active.fontWeight === 'bold');
@@ -667,14 +675,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  propFontFamily.addEventListener('change', () => {
-    const active = canvas.getActiveObject();
-    if (active) {
-      active.set('fontFamily', propFontFamily.value);
-      canvas.renderAll();
-      pushHistory();
-    }
-  });
 
   propFontSize.addEventListener('change', () => {
     const active = canvas.getActiveObject();

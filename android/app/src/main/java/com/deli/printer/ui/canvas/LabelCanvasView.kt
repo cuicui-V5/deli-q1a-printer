@@ -68,10 +68,11 @@ class LabelCanvasView @JvmOverloads constructor(
 
     init {
         try {
-            val tf = Typeface.createFromAsset(context.assets, "fonts/fusion-pixel.ttf")
+            val tf = Typeface.createFromAsset(context.assets, "fonts/NotoSansSC.ttf")
             textPaint.typeface = tf
         } catch (_: Exception) {
             // Fallback to system default if asset is missing
+            textPaint.typeface = Typeface.DEFAULT
         }
         saveStateToHistory()
     }

@@ -22,8 +22,8 @@ object LabelTemplates {
             // Title
             TextElement(
                 x = canvasW / 2f, y = 10f,
-                text = "🍎 食品赏味保鲜标",
-                textSize = 16f, isBold = true, isCentered = true
+                text = "食品赏味保鲜标",
+                textSize = 15f, isBold = true, isCentered = true
             ),
             // Divider
             ShapeElement(
@@ -57,8 +57,8 @@ object LabelTemplates {
             ),
             TextElement(
                 x = 20f, y = 10f,
-                text = "🔌 Type-C 快充线",
-                textSize = 16f, isBold = true
+                text = "Type-C 快充线",
+                textSize = 15f, isBold = true
             ),
             ShapeElement(
                 x = 16f, y = 34f,
@@ -91,7 +91,7 @@ object LabelTemplates {
             TextElement(
                 x = canvasW / 2f, y = 10f,
                 text = "居家整理收纳",
-                textSize = 16f, isBold = true, isCentered = true
+                textSize = 15f, isBold = true, isCentered = true
             ),
             ShapeElement(
                 x = 16f, y = 34f,

@@ -9,22 +9,17 @@ from PIL import Image, ImageDraw, ImageFont, ImageOps
 from .protocol import WIDTH_PX, HEIGHT_PX
 
 def find_system_font(size: int):
-    """Finds a usable Chinese/English TrueType font, prioritizing the embedded dot-matrix pixel font."""
-    # Priority 1: High-clarity 12px dot-matrix pixel font
-    local_pixel_font = os.path.join(os.path.dirname(os.path.dirname(__file__)), "web", "static", "fonts", "fusion-pixel-12px-proportional-zh_hans.ttf")
-    if os.path.exists(local_pixel_font):
-        try:
-            return ImageFont.truetype(local_pixel_font, size)
-        except Exception:
-            pass
-
+    """Finds a usable Chinese/English font, prioritizing Source Han Sans / Noto Sans SC (思源黑体)."""
     candidates = [
+        # Priority 1: Local bundled Source Han Sans / Noto Sans SC
+        os.path.join(os.path.dirname(os.path.dirname(__file__)), "web", "static", "fonts", "NotoSansSC.ttf"),
+        # Priority 2: Windows official Noto Sans SC
+        r"C:\Windows\Fonts\NotoSansSC-VF.ttf",
+        r"C:\Windows\Fonts\SourceHanSansSC-Regular.otf",
         r"C:\Windows\Fonts\msyh.ttc",     # Microsoft YaHei
-        r"C:\Windows\Fonts\msyhbd.ttc",   # YaHei Bold
         r"C:\Windows\Fonts\simhei.ttf",   # SimHei
-        r"C:\Windows\Fonts\simsun.ttc",   # SimSun
-        r"C:\Windows\Fonts\arial.ttf",    # Arial
         "/System/Library/Fonts/PingFang.ttc",
+        "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
         "/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc",
     ]
     for path in candidates:
