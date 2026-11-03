@@ -86,11 +86,18 @@ async def get_config():
 async def scan_ble_devices():
     """Scans for nearby BLE devices, identifying Deli printers."""
     try:
-        devices = await BleakScanner.discover(timeout=4.0)
+        devices = await BleakScanner.discover(timeout=5.0)
         result = []
         for d in devices:
             name = d.name or "Unknown Device"
-            is_deli = bool(name and ('Q1' in name.upper() or 'DELI' in name.upper() or 'A21E' in name.upper()))
+            is_deli = bool(
+                name and (
+                    'Q1' in name.upper() or 
+                    'DELI' in name.upper() or 
+                    'A21E' in name.upper() or
+                    'SS_' in name.upper()
+                ) or (d.address.upper() == DEFAULT_MAC.upper())
+            )
             result.append({
                 "name": name,
                 "address": d.address,

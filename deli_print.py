@@ -172,11 +172,24 @@ async def print_job(mac, img, density=1, copies=1):
             raise ConnectionError(f"Failed to connect to {mac}")
         print("Connected successfully!")
 
+        # Verify that the target device has the Deli printer write characteristic
+        write_char_obj = client.services.get_characteristic(WRITE_CHAR)
+        if not write_char_obj:
+            raise ConnectionError(
+                f"设备已连接，但该设备 (MAC: {mac}) 并非得力 Q1A 打印机（缺少 FF02 打印特征值）！"
+                f"请确认打印机已按键开机（蓝灯常亮），并确认连接正确的设备（默认: {DEFAULT_MAC}）。"
+            )
+
         def on_notify(sender, data):
             pass
 
-        await client.start_notify(NOTIFY_CHAR, on_notify)
-        await client.start_notify(EVENT_CHAR, on_notify)
+        try:
+            if client.services.get_characteristic(NOTIFY_CHAR):
+                await client.start_notify(NOTIFY_CHAR, on_notify)
+            if client.services.get_characteristic(EVENT_CHAR):
+                await client.start_notify(EVENT_CHAR, on_notify)
+        except Exception as e:
+            print(f"[Warning] BLE notification subscription skipped: {e}")
         await asyncio.sleep(0.3)
 
         # Set density: 0=Light, 1=Normal, 2=Dark

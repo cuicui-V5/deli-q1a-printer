@@ -914,6 +914,14 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ── Scan Bluetooth Printers ─────────────────────────────────────────
+  const btnResetMac = document.getElementById('btnResetMac');
+  if (btnResetMac) {
+    btnResetMac.addEventListener('click', () => {
+      document.getElementById('printerMacInput').value = '5E:55:09:F0:A2:1E';
+      showToast('已恢复默认 MAC 地址: 5E:55:09:F0:A2:1E', 'info');
+    });
+  }
+
   const btnScanBle = document.getElementById('btnScanBle');
   btnScanBle.addEventListener('click', async () => {
     btnScanBle.disabled = true;
@@ -922,11 +930,16 @@ document.addEventListener('DOMContentLoaded', () => {
       const resp = await fetch('/api/scan');
       const data = await resp.json();
       if (data.devices && data.devices.length > 0) {
-        const found = data.devices.find(d => d.is_deli) || data.devices[0];
-        document.getElementById('printerMacInput').value = found.address;
-        showToast(`已找到设备: ${found.name} [${found.address}]`, 'success');
+        const deliDev = data.devices.find(d => d.is_deli);
+        if (deliDev) {
+          document.getElementById('printerMacInput').value = deliDev.address;
+          showToast(`已成功匹配到得力打印机: ${deliDev.name} [${deliDev.address}]`, 'success');
+        } else {
+          // Do NOT overwrite with random unrelated Bluetooth devices!
+          showToast(`未扫描到得力打印机，请确保打印机已开机（蓝灯常亮）。已保留默认 MAC`, 'error');
+        }
       } else {
-        showToast('未扫描到设备，请确认打印机已开机', 'error');
+        showToast('未扫描到蓝牙设备，请确认打印机已开机', 'error');
       }
     } catch (err) {
       showToast('蓝牙扫描请求失败: ' + err.message, 'error');
