@@ -210,33 +210,32 @@ async def print_job(mac, img, density=1, copies=1):
             await client.write_gatt_char(WRITE_CHAR, b'\x00' * 12, response=False)
             await asyncio.sleep(0.2)
 
-            # 3. Label mode gap detection / alignment
+            # 3. Label mode gap detection / alignment (retract paper to align top of label)
             if copy == 0:
-                print("Aligning paper to label gap (1F 11 51)...")
+                print("Aligning paper to top of label (1F 11 51)...")
                 await client.write_gatt_char(WRITE_CHAR, bytes([0x1F, 0x11, 0x51]), response=False)
-                await asyncio.sleep(0.5)
+                await asyncio.sleep(0.4)
 
-            # 4. Stream raster bitmap
-            print(f"Streaming bitmap ({w_px}x{h_px} dots, {len(full_payload)} bytes)...")
-            await write_chunks(client, full_payload, chunk_size=200, delay=0.015)
+            # 4. Stream raster bitmap + gap advance command as ONE continuous pipeline!
+            # Appending 0x1D 0x0C directly to the stream ensures the printer firmware's FIFO
+            # buffer transitions seamlessly from dot heating to gap positioning without
+            # decelerating or stopping the stepper motor mid-print.
+            continuous_stream = full_payload + bytes([0x1D, 0x0C])
+            print(f"Streaming continuous print & feed pipeline ({len(continuous_stream)} bytes)...")
+            await write_chunks(client, continuous_stream, chunk_size=200, delay=0.012)
 
-            # Physical burn time delay (allowing dots to be heated without feed interruption)
-            burn_delay = max(2.0, (h_px / 100.0))
-            await asyncio.sleep(burn_delay)
+            # Wait for physical continuous printing and gap feed to finish
+            feed_time = max(1.2, (h_px / 180.0) + 0.4)
+            await asyncio.sleep(feed_time)
 
-            # 5. Position to next gap
-            print("Advancing to next label gap (1D 0C)...")
-            await client.write_gatt_char(WRITE_CHAR, bytes([0x1D, 0x0C]), response=False)
-            await asyncio.sleep(0.8)
-
-            # 6. Exit label mode on last copy
+            # 5. Exit label mode on last copy
             if copy == copies - 1:
                 await client.write_gatt_char(WRITE_CHAR, bytes([0x1F, 0x11, 0x50]), response=False)
-                await asyncio.sleep(0.3)
+                await asyncio.sleep(0.2)
 
-            # 7. Finish job
+            # 6. Finish job
             await client.write_gatt_char(WRITE_CHAR, bytes([0x10, 0xFF, 0xF1, 0x45]), response=False)
-            await asyncio.sleep(1.2)
+            await asyncio.sleep(0.5)
 
         print("\n>>> SUCCESS: All labels printed successfully! <<<")
 
