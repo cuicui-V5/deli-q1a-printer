@@ -19,11 +19,11 @@ object DeliProtocol {
     const val DPI = 203
     const val DOTS_PER_MM = 8
 
-    // Hardware Printhead Geometry (15mm Paper = 120 dots, 15 bytes/line)
-    const val MAX_PRINTHEAD_WIDTH_PX = 120
-    const val DEFAULT_WIDTH_PX = 120
-    const val DEFAULT_HEIGHT_PX = 240 // 30mm label length
-    const val DEFAULT_WIDTH_BYTES = 15
+    // Hardware Printhead Geometry (12.0mm native hardware printhead = 96 dots, 12 bytes/line)
+    const val MAX_PRINTHEAD_WIDTH_PX = 96
+    const val DEFAULT_WIDTH_PX = 96
+    const val DEFAULT_HEIGHT_PX = 216 // 27mm printable length for 30mm label
+    const val DEFAULT_WIDTH_BYTES = 12
 
     // Control Commands (LuckPrinter / Lujiang protocol family)
     val CMD_ENABLE     = byteArrayOf(0x10.toByte(), 0xFF.toByte(), 0xF1.toByte(), 0x03.toByte())
