@@ -2,6 +2,9 @@
 
 > 彻底告别耗材绑架与 RFID 芯片锁！通过逆向工程得力官方 App 蓝牙通信协议，实现无需官方 App、无需 RFID 芯片、直接通过 PC 蓝牙打印第三方通用热敏标签纸。
 
+> 📖 **深度技术博文**：想了解如何从零逆向 ELF 动态库、破译私有蓝牙协议、踩平 96 点硬件移位寄存器溢出天坑、以及无需 Android Studio 纯命令行打造 7.6MB 原生 App？  
+> 👉 请阅读完整纪实长文：[**《打破“耗材锁”：得力 Q1A 蓝牙标签机逆向与原生 Android App 打造全纪实》**](docs/BLOG.md)
+
 ![成功打印实物图](assets/success_print.jpg)
 
 ## 📁 项目工程架构
@@ -23,9 +26,12 @@ deli-q1a-printer/
 │   ├── index.html              # 画布、工具箱、图元检查器与打印控制台
 │   └── static/                 # 样式、前端交互引擎与离线 JS 依赖 (Fabric.js, JsBarcode, QRCode)
 ├── docs/                       # 📚 深度逆向文档与移动端移植指南
+│   ├── BLOG.md                 # 📖 完整技术博文：从协议逆向、硬件踩坑到原生 App 打造全纪实
 │   ├── PROTOCOL.md             # 完整通信协议白皮书与时序规范
 │   └── ANDROID_PORTING.md      # Android 原生 App 移植实战指南 (Kotlin 协程实现)
 ├── assets/                     # 成功打印实物图与 WebApp 预览截图
+├── build_apk.bat               # ⚡ 纯命令行一键编译打包 APK 脚本 (无需 Android Studio)
+├── deli-printer-debug.apk      # 📦 最新构建生成的轻量 Android 安装包 (仅 7.6MB)
 ├── requirements.txt            # 项目依赖
 └── README.md                   # 项目使用手册与逆向分析总结
 ```
@@ -102,6 +108,9 @@ python server.py
 ---
 
 ## 🔬 逆向工程揭秘 (Reverse Engineering Journey)
+
+> 💡 想要阅读包含汇编代码反编译、通信时序管道、硬件移位寄存器溢出排查以及纯命令行 Android 构建全过程的深度长篇复盘？请移步技术博文：  
+> 👉 [**《打破“耗材锁”：得力 Q1A 蓝牙标签机逆向与原生 Android App 打造全纪实》**](docs/BLOG.md)
 
 ### 第一步：硬件层验证 —— 机器真的“锁死”了吗？
 
